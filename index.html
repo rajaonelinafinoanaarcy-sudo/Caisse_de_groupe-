@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caisse du groupe — Gestion financière</title>
+<meta name="theme-color" content="#087A4B">
+<meta name="description" content="Gérez les cotisations, les dépenses et les évènements de votre groupe en ariary.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+:root{
+  --bg:#F6F8F4; --surface:#FFFFFF; --ink:#1B211D; --muted:#66706A; --line:#DCE3DA;
+  --green:#0A6B3C; --on-green:#FFFFFF; --green-soft:#E1F1E7;
+  --red:#C2352B; --red-soft:#FBE7E4;
+  --amber:#7D5200; --amber-soft:#FFF0CC;
+  --hero:#0A6B3C; --hero-ink:#FFFFFF;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#111613; --surface:#1A211D; --ink:#EAF0EB; --muted:#9AA69F; --line:#2D3832;
+    --green:#4CC381; --on-green:#08210F; --green-soft:#17301F;
+    --red:#F0736A; --red-soft:#3A1D1A;
+    --amber:#E8B85A; --amber-soft:#3A2D10;
+    --hero:#0F5A35; --hero-ink:#FFFFFF;
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.45}
+#app{max-width:640px;margin:0 auto;min-height:100vh}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 6px}
+header.top h1{margin:0;font-size:18px;font-weight:700;letter-spacing:.2px}
+header.top .acts{display:flex;gap:8px;align-items:center}
+main{padding:8px 16px 110px}
+h2{font-size:22px;margin:14px 0 12px}
+h3{font-size:16px;margin:22px 0 8px}
+.muted{color:var(--muted);font-size:14px}
+.err{color:var(--red);font-size:14px;min-height:20px}
+label{display:block;font-size:14px;color:var(--muted);margin:0 0 12px}
+input,select,textarea{display:block;width:100%;margin-top:4px;padding:11px 12px;font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px}
+textarea{resize:vertical;min-height:70px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid var(--green);outline-offset:1px}
+button{font:inherit;cursor:pointer}
+button.primary{background:var(--green);color:var(--on-green);border:0;border-radius:8px;padding:11px 16px;font-weight:600}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:11px 16px}
+button.danger{background:transparent;color:var(--red);border:1px solid var(--red);border-radius:8px;padding:11px 16px}
+button.sm{padding:7px 12px;font-size:14px}
+button.link{background:none;border:0;color:var(--muted);text-decoration:underline;padding:4px;font-size:13px}
+button.wide{width:100%}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.hero{background:var(--hero);color:var(--hero-ink);border-radius:16px;padding:20px 18px 0;overflow:hidden;margin-top:6px}
+.hero .lab{font-size:14px;opacity:.85}
+.hero .big{font-size:42px;font-weight:700;line-height:1.1;margin:4px 0 16px;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.hero .two{display:flex;gap:24px;padding-bottom:16px;font-size:14px}
+.hero .two b{display:block;font-size:17px;font-variant-numeric:tabular-nums}
+.hero .stripe{display:flex;height:8px;margin:0 -18px}
+.hero .stripe i{flex:1;background:#fff}.hero .stripe i:nth-child(2){background:#FC3D32}.hero .stripe i:nth-child(3){background:#007E3A}
+.alert{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--amber-soft);color:var(--amber);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:15px}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:var(--green)}
+ul.list{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .t{font-weight:600;word-break:break-word}
+.row .s{font-size:13px;color:var(--muted)}
+.row .right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.row .acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.amt{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.amt.in{color:var(--green)}.amt.out{color:var(--red)}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.chip.ok{background:var(--green-soft);color:var(--green)}
+.chip.wait{background:var(--amber-soft);color:var(--amber)}
+.chip.no{border:1px solid var(--line);color:var(--muted)}
+.chip.bad{background:var(--red-soft);color:var(--red)}
+.tag{display:inline-block;margin-top:4px;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+.seg{display:flex;background:var(--line);border-radius:10px;padding:3px;margin-bottom:14px}
+.seg button{flex:1;border:0;background:transparent;color:var(--muted);padding:9px 6px;border-radius:8px;font-weight:600;font-size:14px}
+.seg button.on{background:var(--surface);color:var(--ink)}
+.empty{color:var(--muted);padding:18px 4px;text-align:center}
+.sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.sumgrid .card b{display:block;font-size:19px;font-variant-numeric:tabular-nums}
+.sumgrid .card.in b{color:var(--green)}.sumgrid .card.out b{color:var(--red)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .in{display:flex;width:100%;max-width:640px}
+nav.tabs button{flex:1;background:none;border:0;border-top:3px solid transparent;padding:11px 2px 12px;font-size:12px;color:var(--muted);font-weight:600}
+nav.tabs button.on{color:var(--ink);border-top-color:var(--green)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:var(--surface);width:100%;max-width:640px;border-radius:16px 16px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+.sheet h3{margin-top:0;font-size:18px}
+.sheet .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;z-index:30;max-width:90%}
+.setup{padding:40px 20px}
+.setup h1{font-size:28px;margin:0 0 8px}
+.setup .muted{margin-bottom:20px}
+@media (prefers-reduced-motion:no-preference){.toast{animation:pop .2s ease-out}@keyframes pop{from{opacity:0;transform:translate(-50%,6px)}}}
+@media print{nav.tabs,header.top .acts,button{display:none!important}}
+
+/* ---------- Identité visuelle modernisée ---------- */
+:root{
+  --bg:#F3F7F4; --surface:#FFFFFF; --ink:#14251C; --muted:#718078; --line:#E2EBE5;
+  --green:#087A4B; --on-green:#FFFFFF; --green-soft:#E5F5EC;
+  --red:#C84646; --red-soft:#FCEBEC; --amber:#8B5B08; --amber-soft:#FFF4D9;
+  --hero:#075B3A; --hero-ink:#FFFFFF; color-scheme:light;
+}
+@media(prefers-color-scheme:dark){:root{--bg:#101A15;--surface:#18251E;--ink:#EAF5EE;--muted:#9BAEA2;--line:#2A3B31;--green:#55D18C;--on-green:#062313;--green-soft:#193B29;--red:#FF8585;--red-soft:#402326;--amber:#F0C36A;--amber-soft:#3A301B;--hero:#064A30;--hero-ink:#FFFFFF;color-scheme:dark}}
+body{background:radial-gradient(ellipse at 50% -15%,rgba(8,122,75,.10),transparent 42%),var(--bg);font-size:15px;line-height:1.5}
+#app{max-width:720px;min-height:100svh;padding-bottom:env(safe-area-inset-bottom)}
+header.top{position:sticky;top:0;z-index:8;padding:15px 18px 12px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+header.top h1{font-size:17px;font-weight:800;letter-spacing:-.35px;display:flex;align-items:center;gap:9px}
+header.top h1:before{content:'₣';display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:var(--green);color:white;font-size:18px;box-shadow:0 5px 14px rgba(8,122,75,.22)}
+main{padding:15px 17px 112px}
+h2{font-size:23px;letter-spacing:-.65px;font-weight:800;margin:12px 0 16px}
+h3{font-size:15px;letter-spacing:-.15px;font-weight:800;margin:24px 0 10px}
+.muted{font-size:13px;line-height:1.55}
+label{font-size:13px;font-weight:650;color:var(--muted);margin-bottom:14px}
+input,select,textarea{border-radius:13px;border:1px solid var(--line);padding:13px 14px;background:var(--surface);margin-top:6px;box-shadow:0 1px 2px rgba(20,37,28,.025)}
+input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px color-mix(in srgb,var(--green) 15%,transparent);outline:0}
+button{transition:transform .15s ease,filter .15s ease}
+button:active{transform:scale(.98)}
+button.primary{background:linear-gradient(135deg,#0B8B55,#076B42);color:white;border:0;border-radius:13px;padding:12px 16px;font-weight:750;box-shadow:0 5px 12px rgba(8,122,75,.16)}
+button.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:13px;padding:11px 15px;font-weight:650}
+button.danger{border-radius:13px}
+button.sm{border-radius:10px;padding:8px 11px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 5px 18px rgba(25,55,37,.035)}
+.hero{position:relative;background:linear-gradient(135deg,#087A4B 0%,#075332 100%);border:1px solid rgba(255,255,255,.12);border-radius:23px;padding:22px 20px 0;margin:4px 0 18px;box-shadow:0 14px 30px rgba(5,91,58,.18)}
+.hero:after{content:'';position:absolute;right:-38px;top:-55px;width:175px;height:175px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none}
+.hero .lab{font-size:13px;font-weight:650;letter-spacing:.2px;opacity:.84}
+.hero .big{font-size:clamp(32px,8vw,43px);font-weight:850;letter-spacing:-1.5px;margin:8px 0 20px}
+.hero .two{gap:20px;padding-bottom:18px;font-size:12px;opacity:.9}
+.hero .two b{font-size:16px;font-weight:750;margin-top:3px}
+.hero .stripe{height:5px;margin:0 -20px;border-radius:0 0 23px 23px;overflow:hidden}
+.alert{border-radius:14px;padding:12px 13px;font-size:13px;margin:10px 0;border:1px solid color-mix(in srgb,var(--amber) 18%,transparent)}
+.bar{height:9px;border-radius:99px;background:var(--line);margin:11px 0 7px}.bar i{border-radius:99px;background:linear-gradient(90deg,#0B8B55,#63D69A)}
+ul.list{border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 4px 15px rgba(25,55,37,.025)}
+.row{padding:14px 15px;align-items:center;gap:10px}.row .t{font-size:14px;font-weight:750}.row .s{font-size:12px;line-height:1.45;margin-top:3px}.row .right{gap:7px}.amt{font-size:13px;font-weight:800}.chip{padding:4px 9px;font-size:11px;letter-spacing:.1px}
+.tag{border-radius:99px;padding:3px 8px;font-size:10px;border-color:var(--line)}
+.seg{border-radius:13px;padding:4px;gap:3px;background:color-mix(in srgb,var(--line) 75%,transparent)}
+.seg button{border-radius:10px;font-size:12px;padding:10px 5px}.seg button.on{box-shadow:0 2px 7px rgba(20,37,28,.08);font-weight:800}
+.sumgrid{gap:11px}.sumgrid .card{border-radius:16px}.sumgrid .card b{font-size:18px;margin-top:4px}
+nav.tabs{background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(18px);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(20,37,28,.055);padding:5px 0 calc(5px + env(safe-area-inset-bottom))}
+nav.tabs .in{max-width:720px;padding:0 5px;gap:2px}
+nav.tabs button{border:0;border-radius:12px;border-top:0;padding:8px 1px 7px;font-size:10px;line-height:1.2;white-space:nowrap}
+nav.tabs button.on{background:var(--green-soft);color:var(--green);border-top:0}
+nav.tabs button.on:before{content:'●';display:block;font-size:8px;margin-bottom:3px}
+nav.tabs button:not(.on):before{content:'○';display:block;font-size:8px;margin-bottom:3px;opacity:.55}
+.overlay{backdrop-filter:blur(5px);align-items:flex-end}.sheet{border-radius:23px 23px 0 0;padding:23px 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -12px 40px rgba(0,0,0,.15)}
+.toast{border-radius:99px;padding:11px 17px;box-shadow:0 6px 22px rgba(0,0,0,.18);font-weight:650}
+.setup{padding:34px 19px}.setup h1{font-size:28px;font-weight:850;letter-spacing:-.8px}.setup .primary{margin-top:6px}
+.empty{font-size:13px;padding:24px 12px}
+@media(min-width:600px){main{padding-left:24px;padding-right:24px}.hero{padding-left:24px;padding-right:24px}.hero .stripe{margin-left:-24px;margin-right:-24px}}
+@media(prefers-reduced-motion:no-preference){.card,.hero,.row{animation:rise .24s ease both}@keyframes rise{from{opacity:.7;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}}
+@media print{body{background:white}main{padding-bottom:10px}}
+
+</style>
+</head>
+<body>
+<div id="app"><p class="muted" style="padding:20px">Chargement…</p></div>
+<div id="modal" class="overlay" hidden></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+/* ---------- Constantes et état ---------- */
+const KEY = 'caisse-groupe-v1';
+const MENSUEL = 2000; // cotisation mensuelle par membre, en ariary
+let S = null, mem = null;
+const d0 = new Date();
+const ymNow = d0.getFullYear() + '-' + String(d0.getMonth() + 1).padStart(2, '0');
+const ui = { tab: 'fonds', mode: 'mensuelle', month: ymNow, rep: 'all', unlocked: 0, evSel: '' };
+
+/* ---------- Utilitaires ---------- */
+const fmt = n => Math.round(n).toLocaleString('fr-FR') + ' Ar';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+const val = id => (document.getElementById(id) || {}).value || '';
+const fmtDate = d => new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+const monthLabel = ym => { const [y, m] = ym.split('-').map(Number); return new Date(y, m - 1, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }); };
+const ymOf = iso => { const d = new Date(iso); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+const parseAmt = s => { const n = Number(String(s).replace(/[\s\u00a0\u202f]/g, '').replace(',', '.')); return Number.isFinite(n) && n > 0 ? Math.round(n) : 0; };
+const toast = msg => { const t = document.getElementById('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2600); };
+
+async function hashPin(p) {
+  try {
+    const b = new TextEncoder().encode('caisse:' + p);
+    const h = await crypto.subtle.digest('SHA-256', b);
+    return Array.from(new Uint8Array(h)).map(x => x.toString(16).padStart(2, '0')).join('');
+  } catch (e) { return 'plain:' + p; }
+}
+
+/* ---------- Stockage sur l'appareil ---------- */
+async function load() {
+  try { const r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch (e) {}
+  return mem;
+}
+async function save() {
+  mem = JSON.parse(JSON.stringify(S));
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { console.error(e); toast("Impossible d'enregistrer sur cet appareil"); }
+}
+
+/* ---------- Calculs ---------- */
+const confirmed = () => S.entries.filter(e => e.statut === 'confirme');
+const approved = () => S.sorties.filter(s => s.statut === 'approuve');
+const total = a => a.reduce((t, x) => t + x.montant, 0);
+const solde = () => total(confirmed()) - total(approved());
+const memberName = id => { const m = S.members.find(m => m.id === id); return m ? m.nom : 'Membre retiré'; };
+const eventTitle = id => { const v = S.events.find(v => v.id === id); return v ? v.titre : ''; };
+const entryWho = e => e.memberId ? memberName(e.memberId) : (e.nomLibre || 'Anonyme');
+function monthStatus(id, ym) {
+  const l = S.entries.filter(e => e.type === 'mensuelle' && e.memberId === id && e.mois === ym);
+  if (l.some(e => e.statut === 'confirme')) return 'paye';
+  if (l.some(e => e.statut === 'attente')) return 'attente';
+  return 'non';
+}
+function movements() {
+  const a = confirmed().map(e => ({
+    date: e.decidedAt, sens: 'in', montant: e.montant, qui: entryWho(e),
+    titre: e.type === 'mensuelle' ? 'Cotisation mensuelle de ' + monthLabel(e.mois) : "Cotisation d'occasion",
+    cat: e.type === 'mensuelle' ? 'Cotisations mensuelles' : (eventTitle(e.eventId) || 'Occasion')
+  }));
+  const b = approved().map(s => ({
+    date: s.decidedAt, sens: 'out', montant: s.montant, qui: s.demandeur,
+    titre: s.motif, cat: eventTitle(s.eventId) || 'Hors occasion'
+  }));
+  return a.concat(b).sort((x, y) => new Date(y.date) - new Date(x.date));
+}
+
+/* ---------- Fenêtres (modales) ---------- */
+function openModal(html) { const m = document.getElementById('modal'); m.innerHTML = '<div class="sheet">' + html + '</div>'; m.hidden = false; return m; }
+function closeModal() { const m = document.getElementById('modal'); m.hidden = true; m.innerHTML = ''; }
+
+// force = true : le PIN est redemandé à chaque fois (sorties d'argent)
+function askPin(o) {
+  if (!o.force && Date.now() < ui.unlocked) { o.ok(); return; }
+  openModal(`<h3>${esc(o.title)}</h3><p class="muted">${esc(o.detail || '')}</p>
+    <input id="pin-in" type="password" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Code PIN du gestionnaire" aria-label="Code PIN">
+    <div id="pin-err" class="err"></div>
+    <div class="btns"><button class="ghost" onclick="closeModal()">Annuler</button><button class="primary" id="pin-ok">Valider</button></div>`);
+  const inp = document.getElementById('pin-in'); inp.focus();
+  const go = async () => {
+    if (await hashPin(inp.value) === S.pinHash) {
+      if (!o.force) { ui.unlocked = Date.now() + 5 * 60000; }
+      closeModal(); o.ok(); render();
+    } else { document.getElementById('pin-err').textContent = 'Code PIN incorrect.'; inp.value = ''; inp.focus(); }
+  };
+  document.getElementById('pin-ok').onclick = go;
+  inp.onkeydown = e => { if (e.key === 'Enter') go(); };
+}
+
+/* ---------- Configuration initiale ---------- */
+async function doSetup() {
+  const nom = val('s-nom').trim() || 'Caisse du groupe', p = val('s-pin'), p2 = val('s-pin2');
+  const err = document.getElementById('s-err');
+  if (!/^\d{4,6}$/.test(p)) { err.textContent = 'Le code PIN doit contenir 4 à 6 chiffres.'; return; }
+  if (p !== p2) { err.textContent = 'Les deux codes PIN ne sont pas identiques.'; return; }
+  S.nom = nom; S.pinHash = await hashPin(p);
+  await save(); render(); toast('Caisse créée');
+}
+function changePin() {
+  askPin({ title: 'Changer le code PIN', detail: 'Saisissez d\'abord le code actuel.', force: true, ok: () => {
+    openModal(`<h3>Nouveau code PIN</h3>
+      <input id="n-pin" type="password" inputmode="numeric" maxlength="6" placeholder="Nouveau code (4 à 6 chiffres)">
+      <input id="n-pin2" type="password" inputmode="numeric" maxlength="6" placeholder="Confirmer le nouveau code" style="margin-top:10px">
+      <div id="n-err" class="err"></div>
+      <div class="btns"><button class="ghost" onclick="closeModal()">Annuler</button><button class="primary" onclick="saveNewPin()">Enregistrer</button></div>`);
+  }});
+}
+async function saveNewPin() {
+  const p = val('n-pin'), p2 = val('n-pin2'), err = document.getElementById('n-err');
+  if (!/^\d{4,6}$/.test(p)) { err.textContent = 'Le code PIN doit contenir 4 à 6 chiffres.'; return; }
+  if (p !== p2) { err.textContent = 'Les deux codes ne sont pas identiques.'; return; }
+  S.pinHash = await hashPin(p); await save(); closeModal(); toast('Code PIN modifié');
+}
+function lockNow() { ui.unlocked = 0; render(); toast('Gestionnaire verrouillé'); }
+
+/* ---------- Actions : membres ---------- */
+async function addMember() {
+  const nom = val('m-nom').trim();
+  if (!nom) return toast('Saisissez le nom du membre');
+  S.members.push({ id: uid(), nom, tel: val('m-tel').trim(), actif: true, creeLe: new Date().toISOString() });
+  await save(); render(); toast('Membre ajouté');
+}
+function removeMember(id) {
+  askPin({ title: 'Retirer ce membre ?', detail: 'Son historique de cotisations est conservé dans le rapport.', ok: async () => {
+    const m = S.members.find(m => m.id === id); if (m) m.actif = false; await save(); toast('Membre retiré');
+  }});
+}
+
+/* ---------- Actions : entrées d'argent ---------- */
+function setMode(m) { ui.mode = m; render(); }
+async function recordMonthly(memberId) {
+  if (monthStatus(memberId, ui.month) !== 'non') return;
+  S.entries.push({ id: uid(), type: 'mensuelle', memberId, mois: ui.month, montant: MENSUEL, statut: 'attente', date: new Date().toISOString() });
+  await save(); render(); toast('Paiement enregistré, à confirmer');
+}
+async function addOccasion() {
+  const eventId = val('o-ev'), who = val('o-who'), montant = parseAmt(val('o-mt'));
+  if (!eventId) return toast('Choisissez une occasion');
+  if (!montant) return toast('Saisissez un montant en ariary');
+  const e = { id: uid(), type: 'occasion', eventId, montant, statut: 'attente', date: new Date().toISOString() };
+  if (who === '_autre') { e.nomLibre = val('o-free').trim(); if (!e.nomLibre) return toast('Saisissez le nom de la personne'); }
+  else e.memberId = who;
+  ui.evSel = eventId; S.entries.push(e);
+  await save(); render(); toast('Cotisation enregistrée, à confirmer');
+}
+function confirmEntry(id) {
+  askPin({ title: 'Confirmer cet argent reçu', detail: 'Le montant sera ajouté aux fonds.', ok: async () => {
+    const e = S.entries.find(e => e.id === id); if (!e || e.statut !== 'attente') return;
+    e.statut = 'confirme'; e.decidedAt = new Date().toISOString(); await save(); render(); toast('Confirmé : ' + fmt(e.montant) + ' ajoutés aux fonds');
+  }});
+}
+function rejectEntry(id) {
+  askPin({ title: 'Refuser cette entrée ?', detail: 'Elle ne sera pas ajoutée aux fonds.', ok: async () => {
+    const e = S.entries.find(e => e.id === id); if (!e) return;
+    e.statut = 'refuse'; e.decidedAt = new Date().toISOString(); await save(); render(); toast('Entrée refusée');
+  }});
+}
+
+/* ---------- Actions : sorties d'argent ---------- */
+async function addSortie() {
+  const montant = parseAmt(val('s-mt')), motif = val('s-motif').trim(), who = val('s-who');
+  if (!montant) return toast('Saisissez un montant en ariary');
+  if (motif.length < 3) return toast('Le motif est obligatoire');
+  let demandeur = who === '_autre' ? val('s-free').trim() : memberName(who);
+  if (!demandeur) return toast('Indiquez qui fait la demande');
+  S.sorties.push({ id: uid(), montant, motif, demandeur, eventId: val('s-ev'), statut: 'attente', date: new Date().toISOString() });
+  await save(); render(); toast('Demande envoyée au gestionnaire');
+}
+function approveSortie(id) {
+  const s = S.sorties.find(s => s.id === id); if (!s) return;
+  if (s.montant > solde()) return toast('Fonds insuffisants. Solde : ' + fmt(solde()));
+  askPin({ title: 'Autoriser la sortie de ' + fmt(s.montant), detail: 'Motif : ' + s.motif, force: true, ok: async () => {
+    s.statut = 'approuve'; s.decidedAt = new Date().toISOString(); await save(); render(); toast('Sortie autorisée');
+  }});
+}
+function refuseSortie(id) {
+  askPin({ title: 'Refuser cette demande ?', detail: 'Aucun argent ne sortira des fonds.', ok: async () => {
+    const s = S.sorties.find(s => s.id === id); if (!s) return;
+    s.statut = 'refuse'; s.decidedAt = new Date().toISOString(); await save(); render(); toast('Demande refusée');
+  }});
+}
+
+/* ---------- Actions : évènements ---------- */
+async function addEvent() {
+  const titre = val('v-titre').trim(); if (!titre) return toast("Donnez un nom à l'évènement");
+  S.events.push({ id: uid(), titre, date: val('v-date') || new Date().toISOString().slice(0, 10), note: val('v-note').trim() });
+  await save(); render(); toast('Évènement ajouté');
+}
+function deleteEvent(id) {
+  askPin({ title: "Supprimer l'évènement ?", ok: async () => { S.events = S.events.filter(v => v.id !== id); await save(); toast('Évènement supprimé'); }});
+}
+function goCotiser(id) { ui.tab = 'entrees'; ui.mode = 'occasion'; ui.evSel = id; render(); window.scrollTo(0, 0); }
+
+/* ---------- Export ---------- */
+function reportMovs() { return movements().filter(m => ui.rep === 'all' || ymOf(m.date) === ui.rep); }
+function exportCsv() {
+  const q = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const rows = [['Date', 'Type', 'Montant (Ar)', 'Occasion / catégorie', 'Libellé / motif', 'Personne'].map(q).join(';')];
+  reportMovs().forEach(m => rows.push([new Date(m.date).toLocaleDateString('fr-FR'), m.sens === 'in' ? 'Entrée' : 'Sortie', (m.sens === 'in' ? '' : '-') + m.montant, m.cat, m.titre, m.qui].map(q).join(';')));
+  if (window.AndroidBridge) { window.AndroidBridge.saveFile('rapport-caisse.csv', '\ufeff' + rows.join('\n')); return; }
+  const blob = new Blob(['\ufeff' + rows.join('\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'rapport-caisse.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- Vues ---------- */
+const chip = st => ({ paye: ['Payé', 'ok'], attente: ['À confirmer', 'wait'], non: ['Non payé', 'no'], confirme: ['Confirmé', 'ok'], approuve: ['Autorisé', 'ok'], refuse: ['Refusé', 'bad'] }[st]);
+const chipHtml = st => { const c = chip(st); return `<span class="chip ${c[1]}">${c[0]}</span>`; };
+const moveRow = m => `<li class="row"><div><div class="t">${esc(m.titre)}</div><div class="s">${esc(m.qui)}, ${fmtDate(m.date)}</div><span class="tag">${esc(m.cat)}</span></div><div class="amt ${m.sens}">${m.sens === 'in' ? '+' : '−'}${fmt(m.montant)}</div></li>`;
+const memberOptions = () => S.members.filter(m => m.actif).map(m => `<option value="${m.id}">${esc(m.nom)}</option>`).join('') + '<option value="_autre">Autre personne</option>';
+const eventOptions = (sel, none) => (none ? `<option value="">${none}</option>` : '') + S.events.slice().sort((a, b) => b.date.localeCompare(a.date)).map(v => `<option value="${v.id}" ${v.id === sel ? 'selected' : ''}>${esc(v.titre)}</option>`).join('');
+
+function setupView() {
+  return `<div class="setup"><h1>Caisse du groupe</h1>
+  <p class="muted">Créez le groupe et le code PIN du gestionnaire. Ce code sera demandé pour autoriser chaque sortie d'argent.</p>
+  <label>Nom du groupe<input id="s-nom" placeholder="Ex. Association des amis"></label>
+  <label>Code PIN (4 à 6 chiffres)<input id="s-pin" type="password" inputmode="numeric" maxlength="6"></label>
+  <label>Confirmer le code PIN<input id="s-pin2" type="password" inputmode="numeric" maxlength="6"></label>
+  <div id="s-err" class="err"></div>
+  <button class="primary wide" onclick="doSetup()">Créer la caisse</button></div>`;
+}
+
+function viewFonds() {
+  const act = S.members.filter(m => m.actif);
+  const paid = act.filter(m => monthStatus(m.id, ymNow) === 'paye').length;
+  const pe = S.entries.filter(e => e.statut === 'attente').length, ps = S.sorties.filter(s => s.statut === 'attente').length;
+  const pct = act.length ? Math.round(paid / act.length * 100) : 0;
+  const rec = movements().slice(0, 5);
+  return `<div class="hero"><div class="lab">Fonds disponibles</div><div class="big">${fmt(solde())}</div>
+    <div class="two"><div>Entrées confirmées<b>${fmt(total(confirmed()))}</b></div><div>Sorties autorisées<b>${fmt(total(approved()))}</b></div></div>
+    <div class="stripe"><i></i><i></i><i></i></div></div>
+    ${pe ? `<div class="alert"><span>${pe} paiement${pe > 1 ? 's' : ''} à confirmer</span><button class="primary sm" onclick="go('entrees')">Voir</button></div>` : ''}
+    ${ps ? `<div class="alert"><span>${ps} demande${ps > 1 ? 's' : ''} de sortie en attente</span><button class="primary sm" onclick="go('sorties')">Voir</button></div>` : ''}
+    <h3>Cotisations de ${monthLabel(ymNow)}</h3>
+    <div class="card"><b>${paid} membre${paid > 1 ? 's' : ''} sur ${act.length}</b> ${act.length ? 'ont payé' : ''}
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="muted">Attendu : ${fmt(act.length * MENSUEL)} (${fmt(MENSUEL)} par membre)</div></div>
+    <h3>Derniers mouvements</h3>
+    ${rec.length ? `<ul class="list">${rec.map(moveRow).join('')}</ul>` : '<p class="empty">Aucun mouvement pour l\'instant. Les entrées apparaissent ici une fois confirmées.</p>'}`;
+}
+
+function viewMembres() {
+  const act = S.members.filter(m => m.actif);
+  return `<h2>Membres</h2>
+  <section class="card"><label>Nom<input id="m-nom" placeholder="Nom du membre"></label>
+  <label>Téléphone (facultatif)<input id="m-tel" inputmode="tel"></label>
+  <button class="primary wide" onclick="addMember()">Ajouter le membre</button></section>
+  <p class="muted">Chaque membre cotise ${fmt(MENSUEL)} par mois.</p>
+  ${act.length ? `<ul class="list">${act.map(m => {
+    const tot = total(confirmed().filter(e => e.memberId === m.id));
+    return `<li class="row"><div><div class="t">${esc(m.nom)}</div><div class="s">${m.tel ? esc(m.tel) + ', ' : ''}total versé : ${fmt(tot)}</div></div>
+    <div class="right">${chipHtml(monthStatus(m.id, ymNow))}<button class="link" onclick="removeMember('${m.id}')">Retirer</button></div></li>`;
+  }).join('')}</ul>` : '<p class="empty">Aucun membre pour l\'instant. Ajoutez le premier ci-dessus.</p>'}`;
+}
+
+function viewEntrees() {
+  const act = S.members.filter(m => m.actif);
+  let body;
+  if (ui.mode === 'mensuelle') {
+    body = `<label>Mois<input type="month" value="${ui.month}" onchange="ui.month=this.value||ymNow;render()"></label>
+    ${act.length ? `<ul class="list">${act.map(m => {
+      const st = monthStatus(m.id, ui.month);
+      return `<li class="row"><div class="t">${esc(m.nom)}</div><div class="right">${chipHtml(st)}${st === 'non' ? `<button class="primary sm" onclick="recordMonthly('${m.id}')">Enregistrer ${fmt(MENSUEL)}</button>` : ''}</div></li>`;
+    }).join('')}</ul>` : '<p class="empty">Ajoutez d\'abord des membres.</p>'}`;
+  } else if (!S.events.length) {
+    body = `<p class="empty">Créez d'abord une occasion pour y rattacher les cotisations.</p><button class="primary wide" onclick="go('evenements')">Ajouter un évènement</button>`;
+  } else {
+    body = `<section class="card"><label>Occasion<select id="o-ev">${eventOptions(ui.evSel)}</select></label>
+    <label>Qui cotise<select id="o-who" onchange="document.getElementById('o-free').hidden=this.value!=='_autre'">${memberOptions()}</select></label>
+    <input id="o-free" hidden placeholder="Nom de la personne" style="margin:-4px 0 12px">
+    <label>Montant (Ar)<input id="o-mt" inputmode="numeric" placeholder="Ex. 5000"></label>
+    <button class="primary wide" onclick="addOccasion()">Enregistrer la cotisation</button></section>`;
+  }
+  const pend = S.entries.filter(e => e.statut === 'attente').sort((a, b) => a.date.localeCompare(b.date));
+  return `<h2>Entrées d'argent</h2>
+  <div class="seg"><button class="${ui.mode === 'mensuelle' ? 'on' : ''}" onclick="setMode('mensuelle')">Cotisation mensuelle</button><button class="${ui.mode === 'occasion' ? 'on' : ''}" onclick="setMode('occasion')">Cotisation d'occasion</button></div>
+  ${body}
+  <h3>À confirmer par le gestionnaire</h3>
+  ${pend.length ? `<ul class="list">${pend.map(e => `<li class="row"><div><div class="t">${esc(entryWho(e))}</div>
+    <div class="s">${e.type === 'mensuelle' ? 'Cotisation de ' + monthLabel(e.mois) : esc(eventTitle(e.eventId) || 'Occasion')}</div>
+    <div class="acts"><button class="primary sm" onclick="confirmEntry('${e.id}')">Confirmer</button><button class="ghost sm" onclick="rejectEntry('${e.id}')">Refuser</button></div></div>
+    <div class="amt in">${fmt(e.montant)}</div></li>`).join('')}</ul>` : '<p class="empty">Rien à confirmer.</p>'}`;
+}
+
+function viewSorties() {
+  const pend = S.sorties.filter(s => s.statut === 'attente');
+  const hist = S.sorties.filter(s => s.statut !== 'attente').sort((a, b) => b.decidedAt.localeCompare(a.decidedAt)).slice(0, 20);
+  return `<h2>Sorties d'argent</h2>
+  <p class="muted">Solde disponible : <b>${fmt(solde())}</b>. Chaque sortie doit être autorisée avec le code PIN du gestionnaire.</p>
+  <section class="card"><label>Montant demandé (Ar)<input id="s-mt" inputmode="numeric" placeholder="Ex. 10000"></label>
+  <label>Motif de la demande<textarea id="s-motif" placeholder="À quoi servira cet argent ?"></textarea></label>
+  <label>Demandeur<select id="s-who" onchange="document.getElementById('s-free').hidden=this.value!=='_autre'">${memberOptions()}</select></label>
+  <input id="s-free" hidden placeholder="Nom du demandeur" style="margin:-4px 0 12px">
+  <label>Occasion concernée<select id="s-ev">${eventOptions('', 'Aucune occasion')}</select></label>
+  <button class="primary wide" onclick="addSortie()">Envoyer la demande</button></section>
+  <h3>Demandes en attente</h3>
+  ${pend.length ? `<ul class="list">${pend.map(s => `<li class="row"><div><div class="t">${esc(s.motif)}</div>
+    <div class="s">${esc(s.demandeur)}, ${fmtDate(s.date)}${s.eventId ? ', ' + esc(eventTitle(s.eventId)) : ''}</div>
+    ${s.montant > solde() ? '<div class="s" style="color:var(--red)">Dépasse le solde actuel</div>' : ''}
+    <div class="acts"><button class="primary sm" onclick="approveSortie('${s.id}')">Autoriser avec le PIN</button><button class="ghost sm" onclick="refuseSortie('${s.id}')">Refuser</button></div></div>
+    <div class="amt out">${fmt(s.montant)}</div></li>`).join('')}</ul>` : '<p class="empty">Aucune demande en attente.</p>'}
+  ${hist.length ? `<h3>Historique</h3><ul class="list">${hist.map(s => `<li class="row"><div><div class="t">${esc(s.motif)}</div><div class="s">${esc(s.demandeur)}, ${fmtDate(s.decidedAt)}</div></div><div class="right">${chipHtml(s.statut)}<span class="amt">${fmt(s.montant)}</span></div></li>`).join('')}</ul>` : ''}`;
+}
+
+function viewEvents() {
+  const evs = S.events.slice().sort((a, b) => b.date.localeCompare(a.date));
+  return `<h2>Évènements</h2>
+  <section class="card"><label>Nom de l'évènement<input id="v-titre" placeholder="Ex. Mariage de Rivo"></label>
+  <label>Date<input id="v-date" type="date" value="${new Date().toISOString().slice(0, 10)}"></label>
+  <label>Note (facultatif)<input id="v-note"></label>
+  <button class="primary wide" onclick="addEvent()">Ajouter l'évènement</button></section>
+  <h3>Liste</h3>
+  ${evs.length ? `<ul class="list">${evs.map(v => {
+    const inn = total(confirmed().filter(e => e.eventId === v.id)), out = total(approved().filter(s => s.eventId === v.id));
+    const used = S.entries.some(e => e.eventId === v.id) || S.sorties.some(s => s.eventId === v.id);
+    return `<li class="row"><div><div class="t">${esc(v.titre)}</div><div class="s">${fmtDate(v.date)}${v.note ? ', ' + esc(v.note) : ''}</div>
+    <div class="s">Collecté : ${fmt(inn)}, dépensé : ${fmt(out)}</div>
+    <div class="acts"><button class="primary sm" onclick="goCotiser('${v.id}')">Cotiser</button>${used ? '' : `<button class="ghost sm" onclick="deleteEvent('${v.id}')">Supprimer</button>`}</div></div></li>`;
+  }).join('')}</ul>` : '<p class="empty">Aucun évènement. Ajoutez-en un pour ouvrir une cotisation d\'occasion.</p>'}`;
+}
+
+function viewRapport() {
+  const all = movements();
+  const months = [...new Set(all.map(m => ymOf(m.date)).concat([ymNow]))].sort().reverse();
+  const mv = reportMovs(), ins = mv.filter(m => m.sens === 'in'), outs = mv.filter(m => m.sens === 'out');
+  const group = a => { const o = {}; a.forEach(m => o[m.cat] = (o[m.cat] || 0) + m.montant); return Object.entries(o).sort((x, y) => y[1] - x[1]); };
+  const lines = (g, cls) => g.length ? `<ul class="list">${g.map(([k, v]) => `<li class="row"><div class="t">${esc(k)}</div><div class="amt ${cls}">${fmt(v)}</div></li>`).join('')}</ul>` : '<p class="empty">Rien sur cette période.</p>';
+  const ti = total(ins), to = total(outs);
+  return `<h2>Rapport</h2>
+  <label>Période<select onchange="ui.rep=this.value;render()"><option value="all" ${ui.rep === 'all' ? 'selected' : ''}>Depuis le début</option>${months.map(m => `<option value="${m}" ${ui.rep === m ? 'selected' : ''}>${monthLabel(m)}</option>`).join('')}</select></label>
+  <div class="sumgrid"><div class="card in">Entrées<b>${fmt(ti)}</b></div><div class="card out">Sorties<b>${fmt(to)}</b></div></div>
+  <div class="card">Différence sur la période : <b>${fmt(ti - to)}</b><div class="muted">Fonds disponibles aujourd'hui : ${fmt(solde())}</div></div>
+  <h3>Entrées par catégorie ou occasion</h3>${lines(group(ins), 'in')}
+  <h3>Sorties par occasion</h3>${lines(group(outs), 'out')}
+  <h3>Journal détaillé</h3>
+  ${mv.length ? `<ul class="list">${mv.map(moveRow).join('')}</ul>` : '<p class="empty">Aucun mouvement confirmé sur cette période.</p>'}
+  <p class="muted">Seuls les paiements confirmés et les sorties autorisées sont comptés.</p>
+  <button class="ghost wide" onclick="exportCsv()">Exporter en CSV</button>`;
+}
+
+/* ---------- Affichage ---------- */
+const TABS = [['fonds', 'Fonds'], ['membres', 'Membres'], ['entrees', 'Entrées'], ['sorties', 'Sorties'], ['evenements', 'Évènements'], ['rapport', 'Rapport']];
+const VIEWS = { fonds: viewFonds, membres: viewMembres, entrees: viewEntrees, sorties: viewSorties, evenements: viewEvents, rapport: viewRapport };
+function go(t) { ui.tab = t; render(); window.scrollTo(0, 0); }
+function render() {
+  const app = document.getElementById('app');
+  if (!S.pinHash) { app.innerHTML = setupView(); return; }
+  const open = Date.now() < ui.unlocked;
+  app.innerHTML = `<header class="top"><h1>${esc(S.nom)}</h1><div class="acts">
+    ${open ? '<button class="ghost sm" onclick="lockNow()">Verrouiller</button>' : ''}<button class="ghost sm" onclick="changePin()">Code PIN</button></div></header>
+    <main>${VIEWS[ui.tab]()}</main>
+    <nav class="tabs"><div class="in">${TABS.map(t => `<button class="${ui.tab === t[0] ? 'on' : ''}" onclick="go('${t[0]}')">${t[1]}</button>`).join('')}</div></nav>`;
+}
+
+/* ---------- Démarrage ---------- */
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(() => {}); }
+if (navigator.storage && navigator.storage.persist) { navigator.storage.persist().catch(() => {}); }
+(async () => {
+  S = await load() || { nom: 'Caisse du groupe', pinHash: '', members: [], events: [], entries: [], sorties: [] };
+  render();
+})();
+</script>
+</body>
+</html>
