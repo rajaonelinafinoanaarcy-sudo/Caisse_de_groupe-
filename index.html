@@ -2,488 +2,651 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Caisse du groupe — Gestion financière</title>
-<meta name="theme-color" content="#087A4B">
-<meta name="description" content="Gérez les cotisations, les dépenses et les évènements de votre groupe en ariary.">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A5F34">
+<title>Caisse du groupe</title>
 <style>
 :root{
-  --bg:#F6F8F4; --surface:#FFFFFF; --ink:#1B211D; --muted:#66706A; --line:#DCE3DA;
-  --green:#0A6B3C; --on-green:#FFFFFF; --green-soft:#E1F1E7;
-  --red:#C2352B; --red-soft:#FBE7E4;
-  --amber:#7D5200; --amber-soft:#FFF0CC;
-  --hero:#0A6B3C; --hero-ink:#FFFFFF;
-  color-scheme: light;
+  --bg:#F1F5F0; --surface:#FFFFFF; --ink:#13201A; --muted:#5B6860; --line:#E0E8DF;
+  --green:#0B6B3A; --on-green:#FFFFFF; --green-soft:#E0F2E7; --green-ink:#0A5430;
+  --red:#BF3A2E; --red-soft:#FCE8E5; --amber:#7A4F00; --amber-soft:#FFF0CE;
+  --band1:#09592F; --band2:#10824A;
+  --shadow:0 1px 2px rgba(15,40,28,.06),0 10px 28px rgba(15,40,28,.07);
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){
+@media (prefers-color-scheme:dark){
   :root{
-    --bg:#111613; --surface:#1A211D; --ink:#EAF0EB; --muted:#9AA69F; --line:#2D3832;
-    --green:#4CC381; --on-green:#08210F; --green-soft:#17301F;
-    --red:#F0736A; --red-soft:#3A1D1A;
-    --amber:#E8B85A; --amber-soft:#3A2D10;
-    --hero:#0F5A35; --hero-ink:#FFFFFF;
-    color-scheme: dark;
+    --bg:#0D130F; --surface:#17201A; --ink:#E8F0EA; --muted:#94A298; --line:#26332B;
+    --green:#4CC381; --on-green:#06210F; --green-soft:#163323; --green-ink:#86E3AE;
+    --red:#F0786E; --red-soft:#3A1E1B; --amber:#EDBE63; --amber-soft:#3A2D10;
+    --band1:#0A3B22; --band2:#0F5A35; --shadow:0 0 0 1px #26332B;
+    color-scheme:dark;
   }
 }
-*{box-sizing:border-box}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.45}
-#app{max-width:640px;margin:0 auto;min-height:100vh}
-header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 6px}
-header.top h1{margin:0;font-size:18px;font-weight:700;letter-spacing:.2px}
-header.top .acts{display:flex;gap:8px;align-items:center}
-main{padding:8px 16px 110px}
-h2{font-size:22px;margin:14px 0 12px}
-h3{font-size:16px;margin:22px 0 8px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Avenir Next","Segoe UI Variable","Segoe UI",Roboto,system-ui,sans-serif;font-size:16px;line-height:1.45}
+body.noscroll{overflow:hidden}
+button{font:inherit;cursor:pointer;color:inherit}
+h1,h2,h3,p{margin:0}
 .muted{color:var(--muted);font-size:14px}
-.err{color:var(--red);font-size:14px;min-height:20px}
-label{display:block;font-size:14px;color:var(--muted);margin:0 0 12px}
-input,select,textarea{display:block;width:100%;margin-top:4px;padding:11px 12px;font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px}
-textarea{resize:vertical;min-height:70px}
-input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid var(--green);outline-offset:1px}
-button{font:inherit;cursor:pointer}
-button.primary{background:var(--green);color:var(--on-green);border:0;border-radius:8px;padding:11px 16px;font-weight:600}
-button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:11px 16px}
-button.danger{background:transparent;color:var(--red);border:1px solid var(--red);border-radius:8px;padding:11px 16px}
-button.sm{padding:7px 12px;font-size:14px}
-button.link{background:none;border:0;color:var(--muted);text-decoration:underline;padding:4px;font-size:13px}
-button.wide{width:100%}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
-.hero{background:var(--hero);color:var(--hero-ink);border-radius:16px;padding:20px 18px 0;overflow:hidden;margin-top:6px}
-.hero .lab{font-size:14px;opacity:.85}
-.hero .big{font-size:42px;font-weight:700;line-height:1.1;margin:4px 0 16px;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
-.hero .two{display:flex;gap:24px;padding-bottom:16px;font-size:14px}
-.hero .two b{display:block;font-size:17px;font-variant-numeric:tabular-nums}
-.hero .stripe{display:flex;height:8px;margin:0 -18px}
-.hero .stripe i{flex:1;background:#fff}.hero .stripe i:nth-child(2){background:#FC3D32}.hero .stripe i:nth-child(3){background:#007E3A}
-.alert{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--amber-soft);color:var(--amber);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:15px}
-.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
-.bar i{display:block;height:100%;background:var(--green)}
-ul.list{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px}
-.row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.err{color:var(--red);font-size:14px;min-height:20px;margin:6px 0 2px}
+.ok-msg{color:var(--green-ink);background:var(--green-soft);border-radius:12px;padding:10px 12px;font-size:14px;margin-bottom:12px}
+
+/* --- Bandeau --- */
+.band{background:radial-gradient(120% 100% at 100% 0%,rgba(255,255,255,.16),transparent 55%),linear-gradient(160deg,var(--band1),var(--band2));color:#fff;padding:calc(14px + env(safe-area-inset-top)) 18px 26px;border-radius:0 0 30px 30px}
+.band-in{max-width:640px;margin:0 auto}
+.band .row1{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.band .grp{font-size:15px;font-weight:700;letter-spacing:.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.band .tools{display:flex;gap:8px}
+.iconbtn{width:42px;height:42px;border-radius:14px;border:0;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center}
+.band .lab{margin-top:20px;font-size:14px;opacity:.88}
+.band .big{font-size:40px;font-weight:800;letter-spacing:-.8px;font-variant-numeric:tabular-nums;line-height:1.1;margin:4px 0 16px}
+.band .split{display:flex;gap:10px}
+.band .pill{flex:1;background:rgba(255,255,255,.14);border-radius:16px;padding:10px 12px;font-size:13px}
+.band .pill b{display:block;font-size:16px;font-variant-numeric:tabular-nums}
+.band .title{margin-top:18px;font-size:27px;font-weight:800;letter-spacing:-.3px}
+.band .sub{font-size:14px;opacity:.88;margin-top:2px}
+.stripe{display:flex;height:5px;border-radius:99px;overflow:hidden;width:64px;margin-top:14px}
+.stripe i{flex:1;background:#fff}.stripe i:nth-child(2){background:#FC3D32}.stripe i:nth-child(3){background:#2BB673}
+
+main{max-width:640px;margin:0 auto;padding:18px 16px 112px}
+.view{animation:rise .28s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){.view,.sheet{animation:none!important}}
+
+/* --- Cartes et listes --- */
+.card{background:var(--surface);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:22px 4px 10px}
+.sec h3{font-size:17px;font-weight:700}
+ul.list{list-style:none;margin:0 0 14px;padding:0;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.row{display:flex;gap:12px;align-items:center;padding:13px 14px;border-bottom:1px solid var(--line)}
 .row:last-child{border-bottom:0}
-.row .t{font-weight:600;word-break:break-word}
-.row .s{font-size:13px;color:var(--muted)}
-.row .right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
-.row .acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-.amt{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.row .body{flex:1;min-width:0}
+.row .t{font-weight:650;word-break:break-word}
+.row .s{font-size:13px;color:var(--muted);word-break:break-word}
+.row .end{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.row .acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.amt{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 .amt.in{color:var(--green)}.amt.out{color:var(--red)}
-.chip{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap}
-.chip.ok{background:var(--green-soft);color:var(--green)}
+.av{width:42px;height:42px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-weight:800;font-size:15px;background:hsl(var(--h) 45% 88%);color:hsl(var(--h) 55% 24%)}
+@media (prefers-color-scheme:dark){.av{background:hsl(var(--h) 28% 24%);color:hsl(var(--h) 65% 86%)}}
+.mv{width:42px;height:42px;border-radius:14px;flex-shrink:0;display:grid;place-items:center}
+.mv.in{background:var(--green-soft);color:var(--green-ink)}.mv.out{background:var(--red-soft);color:var(--red)}
+.tag{display:inline-block;margin-top:4px;font-size:12px;color:var(--muted);background:var(--bg);border-radius:8px;padding:2px 8px}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.chip.ok{background:var(--green-soft);color:var(--green-ink)}
 .chip.wait{background:var(--amber-soft);color:var(--amber)}
-.chip.no{border:1px solid var(--line);color:var(--muted)}
+.chip.no{background:var(--bg);color:var(--muted)}
 .chip.bad{background:var(--red-soft);color:var(--red)}
-.tag{display:inline-block;margin-top:4px;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
-.seg{display:flex;background:var(--line);border-radius:10px;padding:3px;margin-bottom:14px}
-.seg button{flex:1;border:0;background:transparent;color:var(--muted);padding:9px 6px;border-radius:8px;font-weight:600;font-size:14px}
-.seg button.on{background:var(--surface);color:var(--ink)}
-.empty{color:var(--muted);padding:18px 4px;text-align:center}
-.sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
-.sumgrid .card b{display:block;font-size:19px;font-variant-numeric:tabular-nums}
-.sumgrid .card.in b{color:var(--green)}.sumgrid .card.out b{color:var(--red)}
-nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
-nav.tabs .in{display:flex;width:100%;max-width:640px}
-nav.tabs button{flex:1;background:none;border:0;border-top:3px solid transparent;padding:11px 2px 12px;font-size:12px;color:var(--muted);font-weight:600}
-nav.tabs button.on{color:var(--ink);border-top-color:var(--green)}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20}
-.sheet{background:var(--surface);width:100%;max-width:640px;border-radius:16px 16px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
-.sheet h3{margin-top:0;font-size:18px}
-.sheet .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;z-index:30;max-width:90%}
-.setup{padding:40px 20px}
-.setup h1{font-size:28px;margin:0 0 8px}
-.setup .muted{margin-bottom:20px}
-@media (prefers-reduced-motion:no-preference){.toast{animation:pop .2s ease-out}@keyframes pop{from{opacity:0;transform:translate(-50%,6px)}}}
-@media print{nav.tabs,header.top .acts,button{display:none!important}}
+.empty{text-align:center;color:var(--muted);padding:26px 12px}
+.bar{height:10px;background:var(--bg);border-radius:99px;overflow:hidden;margin:10px 0 6px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),#2BB673);border-radius:99px}
+.alert{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--amber-soft);color:var(--amber);border-radius:16px;padding:12px 14px;margin-bottom:10px;font-weight:600;font-size:15px}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.quick .btn{flex-direction:column;gap:6px;min-height:84px;border-radius:18px;font-size:14px}
+.sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.sumgrid .card{margin:0}
+.sumgrid .card b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.sumgrid .in b{color:var(--green)}.sumgrid .out b{color:var(--red)}
 
-/* ---------- Identité visuelle modernisée ---------- */
-:root{
-  --bg:#F3F7F4; --surface:#FFFFFF; --ink:#14251C; --muted:#718078; --line:#E2EBE5;
-  --green:#087A4B; --on-green:#FFFFFF; --green-soft:#E5F5EC;
-  --red:#C84646; --red-soft:#FCEBEC; --amber:#8B5B08; --amber-soft:#FFF4D9;
-  --hero:#075B3A; --hero-ink:#FFFFFF; color-scheme:light;
-}
-@media(prefers-color-scheme:dark){:root{--bg:#101A15;--surface:#18251E;--ink:#EAF5EE;--muted:#9BAEA2;--line:#2A3B31;--green:#55D18C;--on-green:#062313;--green-soft:#193B29;--red:#FF8585;--red-soft:#402326;--amber:#F0C36A;--amber-soft:#3A301B;--hero:#064A30;--hero-ink:#FFFFFF;color-scheme:dark}}
-body{background:radial-gradient(ellipse at 50% -15%,rgba(8,122,75,.10),transparent 42%),var(--bg);font-size:15px;line-height:1.5}
-#app{max-width:720px;min-height:100svh;padding-bottom:env(safe-area-inset-bottom)}
-header.top{position:sticky;top:0;z-index:8;padding:15px 18px 12px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
-header.top h1{font-size:17px;font-weight:800;letter-spacing:-.35px;display:flex;align-items:center;gap:9px}
-header.top h1:before{content:'₣';display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:var(--green);color:white;font-size:18px;box-shadow:0 5px 14px rgba(8,122,75,.22)}
-main{padding:15px 17px 112px}
-h2{font-size:23px;letter-spacing:-.65px;font-weight:800;margin:12px 0 16px}
-h3{font-size:15px;letter-spacing:-.15px;font-weight:800;margin:24px 0 10px}
-.muted{font-size:13px;line-height:1.55}
-label{font-size:13px;font-weight:650;color:var(--muted);margin-bottom:14px}
-input,select,textarea{border-radius:13px;border:1px solid var(--line);padding:13px 14px;background:var(--surface);margin-top:6px;box-shadow:0 1px 2px rgba(20,37,28,.025)}
-input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px color-mix(in srgb,var(--green) 15%,transparent);outline:0}
-button{transition:transform .15s ease,filter .15s ease}
-button:active{transform:scale(.98)}
-button.primary{background:linear-gradient(135deg,#0B8B55,#076B42);color:white;border:0;border-radius:13px;padding:12px 16px;font-weight:750;box-shadow:0 5px 12px rgba(8,122,75,.16)}
-button.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:13px;padding:11px 15px;font-weight:650}
-button.danger{border-radius:13px}
-button.sm{border-radius:10px;padding:8px 11px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 5px 18px rgba(25,55,37,.035)}
-.hero{position:relative;background:linear-gradient(135deg,#087A4B 0%,#075332 100%);border:1px solid rgba(255,255,255,.12);border-radius:23px;padding:22px 20px 0;margin:4px 0 18px;box-shadow:0 14px 30px rgba(5,91,58,.18)}
-.hero:after{content:'';position:absolute;right:-38px;top:-55px;width:175px;height:175px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none}
-.hero .lab{font-size:13px;font-weight:650;letter-spacing:.2px;opacity:.84}
-.hero .big{font-size:clamp(32px,8vw,43px);font-weight:850;letter-spacing:-1.5px;margin:8px 0 20px}
-.hero .two{gap:20px;padding-bottom:18px;font-size:12px;opacity:.9}
-.hero .two b{font-size:16px;font-weight:750;margin-top:3px}
-.hero .stripe{height:5px;margin:0 -20px;border-radius:0 0 23px 23px;overflow:hidden}
-.alert{border-radius:14px;padding:12px 13px;font-size:13px;margin:10px 0;border:1px solid color-mix(in srgb,var(--amber) 18%,transparent)}
-.bar{height:9px;border-radius:99px;background:var(--line);margin:11px 0 7px}.bar i{border-radius:99px;background:linear-gradient(90deg,#0B8B55,#63D69A)}
-ul.list{border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 4px 15px rgba(25,55,37,.025)}
-.row{padding:14px 15px;align-items:center;gap:10px}.row .t{font-size:14px;font-weight:750}.row .s{font-size:12px;line-height:1.45;margin-top:3px}.row .right{gap:7px}.amt{font-size:13px;font-weight:800}.chip{padding:4px 9px;font-size:11px;letter-spacing:.1px}
-.tag{border-radius:99px;padding:3px 8px;font-size:10px;border-color:var(--line)}
-.seg{border-radius:13px;padding:4px;gap:3px;background:color-mix(in srgb,var(--line) 75%,transparent)}
-.seg button{border-radius:10px;font-size:12px;padding:10px 5px}.seg button.on{box-shadow:0 2px 7px rgba(20,37,28,.08);font-weight:800}
-.sumgrid{gap:11px}.sumgrid .card{border-radius:16px}.sumgrid .card b{font-size:18px;margin-top:4px}
-nav.tabs{background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(18px);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(20,37,28,.055);padding:5px 0 calc(5px + env(safe-area-inset-bottom))}
-nav.tabs .in{max-width:720px;padding:0 5px;gap:2px}
-nav.tabs button{border:0;border-radius:12px;border-top:0;padding:8px 1px 7px;font-size:10px;line-height:1.2;white-space:nowrap}
-nav.tabs button.on{background:var(--green-soft);color:var(--green);border-top:0}
-nav.tabs button.on:before{content:'●';display:block;font-size:8px;margin-bottom:3px}
-nav.tabs button:not(.on):before{content:'○';display:block;font-size:8px;margin-bottom:3px;opacity:.55}
-.overlay{backdrop-filter:blur(5px);align-items:flex-end}.sheet{border-radius:23px 23px 0 0;padding:23px 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -12px 40px rgba(0,0,0,.15)}
-.toast{border-radius:99px;padding:11px 17px;box-shadow:0 6px 22px rgba(0,0,0,.18);font-weight:650}
-.setup{padding:34px 19px}.setup h1{font-size:28px;font-weight:850;letter-spacing:-.8px}.setup .primary{margin-top:6px}
-.empty{font-size:13px;padding:24px 12px}
-@media(min-width:600px){main{padding-left:24px;padding-right:24px}.hero{padding-left:24px;padding-right:24px}.hero .stripe{margin-left:-24px;margin-right:-24px}}
-@media(prefers-reduced-motion:no-preference){.card,.hero,.row{animation:rise .24s ease both}@keyframes rise{from{opacity:.7;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}}
-@media print{body{background:white}main{padding-bottom:10px}}
+/* --- Formulaires et boutons --- */
+.field{margin-bottom:12px}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:5px}
+input,select,textarea{display:block;width:100%;padding:0 14px;min-height:48px;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid transparent;border-radius:14px}
+textarea{padding:12px 14px;min-height:84px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green);background:var(--surface)}
+.btn{border:0;border-radius:14px;padding:0 18px;min-height:48px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible,.iconbtn:focus-visible,nav.tabs button:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.btn.primary{background:var(--green);color:var(--on-green)}
+.btn.soft{background:var(--green-soft);color:var(--green-ink)}
+.btn.line{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.btn.danger{background:var(--red-soft);color:var(--red)}
+.btn.sm{min-height:36px;padding:0 13px;font-size:14px;border-radius:11px}
+.btn.wide{width:100%}
+.btn[disabled]{opacity:.6}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:14px;padding:8px}
+.seg{display:flex;background:var(--surface);border-radius:16px;padding:4px;margin-bottom:14px;box-shadow:var(--shadow)}
+.seg button{flex:1;border:0;background:transparent;color:var(--muted);padding:11px 6px;border-radius:12px;font-weight:700;font-size:14px}
+.seg button.on{background:var(--green);color:var(--on-green)}
 
+/* --- Navigation basse --- */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);box-shadow:0 -1px 0 var(--line),0 -8px 24px rgba(15,40,28,.06);padding-bottom:env(safe-area-inset-bottom);z-index:10}
+nav.tabs .in{display:flex;max-width:640px;margin:0 auto}
+nav.tabs button{flex:1;background:none;border:0;padding:9px 0 9px;color:var(--muted);font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+nav.tabs .pl{position:relative;width:54px;height:30px;border-radius:15px;display:grid;place-items:center;transition:background .2s}
+nav.tabs button.on{color:var(--ink)}
+nav.tabs button.on .pl{background:var(--green-soft);color:var(--green-ink)}
+.dot{position:absolute;top:-4px;right:2px;min-width:17px;height:17px;border-radius:9px;background:var(--red);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;padding:0 4px}
+
+/* --- Fenêtres basses --- */
+.overlay{position:fixed;inset:0;background:rgba(5,15,10,.5);display:flex;align-items:flex-end;justify-content:center;z-index:30}
+.sheet{background:var(--surface);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:26px 26px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom));animation:up .25s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.grab{width:42px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+.sheet h3{font-size:20px;margin-bottom:6px}
+.sheet .btns{display:flex;gap:10px;margin-top:14px}
+.sheet .btns .btn{flex:1}
+.bigcode{font-size:38px;font-weight:800;letter-spacing:8px;text-align:center;background:var(--green-soft);color:var(--green-ink);border-radius:18px;padding:16px 8px;margin:14px 0;font-variant-numeric:tabular-nums}
+.big-amt{font-size:30px;font-weight:800;margin:8px 0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(16px + env(safe-area-inset-top));background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-size:14px;font-weight:600;z-index:40;max-width:90%;text-align:center}
+.toast.bad{background:var(--red);color:#fff}
+
+/* --- Écrans d'accueil (connexion) --- */
+.auth{max-width:440px;margin:0 auto;padding:calc(36px + env(safe-area-inset-top)) 20px 40px}
+.auth .logo{width:76px;height:76px;margin:0 auto 14px;display:block}
+.auth h1{text-align:center;font-size:28px;font-weight:800;letter-spacing:-.4px}
+.auth .tag2{text-align:center;color:var(--muted);margin:6px 0 24px}
+.loading{min-height:100vh;display:grid;place-items:center}
+.spin{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-<div id="app"><p class="muted" style="padding:20px">Chargement…</p></div>
+<div id="app"><div class="loading"><div class="spin"></div></div></div>
 <div id="modal" class="overlay" hidden></div>
 <div id="toast" class="toast" hidden></div>
 
 <script>
-/* ---------- Constantes et état ---------- */
-const KEY = 'caisse-groupe-v1';
-const MENSUEL = 2000; // cotisation mensuelle par membre, en ariary
-let S = null, mem = null;
-const d0 = new Date();
-const ymNow = d0.getFullYear() + '-' + String(d0.getMonth() + 1).padStart(2, '0');
-const ui = { tab: 'fonds', mode: 'mensuelle', month: ymNow, rep: 'all', unlocked: 0, evSel: '' };
+/* =====================================================
+   CONFIGURATION : adresse et clé publique du projet Supabase
+   (renseignées une fois pour toutes dans cette application)
+   ===================================================== */
+const CONFIG = { url: 'https://nmloaycgzhyofppznomp.supabase.co', key: 'sb_publishable_6Esrnb5lf-tYRCD-BSZYrA_aNkbEZ8f' };
 
 /* ---------- Utilitaires ---------- */
-const fmt = n => Math.round(n).toLocaleString('fr-FR') + ' Ar';
+const $ = id => document.getElementById(id);
+const val = id => ($(id) || {}).value || '';
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
-const val = id => (document.getElementById(id) || {}).value || '';
+const fmt = n => Math.round(n).toLocaleString('fr-FR') + ' Ar';
 const fmtDate = d => new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
 const monthLabel = ym => { const [y, m] = ym.split('-').map(Number); return new Date(y, m - 1, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }); };
 const ymOf = iso => { const d = new Date(iso); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+const now0 = new Date();
+const ymNow = now0.getFullYear() + '-' + String(now0.getMonth() + 1).padStart(2, '0');
 const parseAmt = s => { const n = Number(String(s).replace(/[\s\u00a0\u202f]/g, '').replace(',', '.')); return Number.isFinite(n) && n > 0 ? Math.round(n) : 0; };
-const toast = msg => { const t = document.getElementById('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2600); };
+const LS = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+function toast(msg, bad) {
+  const t = $('toast'); t.textContent = msg; t.className = 'toast' + (bad ? ' bad' : ''); t.hidden = false;
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, bad ? 4200 : 2600);
+}
+const ICON = {
+  home: '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M17 14.2c2.6.2 4.5 2.2 4.5 5.3"/>',
+  inflow: '<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/>',
+  outflow: '<path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 20h16"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  chart: '<path d="M5 20V11M12 20V4M19 20v-6"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+  refresh: '<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>',
+  share: '<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'
+};
+const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
+const hue = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+const initials = n => String(n).trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '?';
+const avatar = n => `<span class="av" style="--h:${hue(n)}">${esc(initials(n))}</span>`;
 
-async function hashPin(p) {
-  try {
-    const b = new TextEncoder().encode('caisse:' + p);
-    const h = await crypto.subtle.digest('SHA-256', b);
-    return Array.from(new Uint8Array(h)).map(x => x.toString(16).padStart(2, '0')).join('');
-  } catch (e) { return 'plain:' + p; }
+/* ---------- Connexion au serveur (Supabase) ---------- */
+function cfg() { return (CONFIG.url && CONFIG.key) ? CONFIG : (LS.get('cfg') || {}); }
+let session = LS.get('session');
+function setSession(d) {
+  if (!d) { session = null; LS.del('session'); return; }
+  session = { access_token: d.access_token, refresh_token: d.refresh_token, expires_at: d.expires_at || Math.floor(Date.now() / 1000) + (d.expires_in || 3600), user: d.user || (session && session.user) };
+  LS.set('session', session);
+}
+const TR = [
+  [/invalid login credentials/i, 'Adresse mail ou mot de passe incorrect.'],
+  [/user already registered|already been registered|user_already_exists/i, 'Un compte existe déjà avec cette adresse. Connectez-vous.'],
+  [/at least 6 characters|weak_password|password should/i, 'Le mot de passe doit contenir au moins 6 caractères.'],
+  [/email not confirmed/i, "Confirmez d'abord votre adresse mail."],
+  [/rate limit|over_email/i, 'Trop de tentatives. Réessayez dans quelques minutes.'],
+  [/unable to validate email|invalid format|invalid email/i, 'Adresse mail invalide.'],
+  [/duplicate key|23505/i, 'Cet enregistrement existe déjà.'],
+  [/jwt expired|invalid jwt/i, 'Session expirée. Reconnectez-vous.']
+];
+function tr(msg) { for (const [re, t] of TR) if (re.test(msg)) return t; return msg; }
+async function raw(path, o = {}) {
+  const c = cfg();
+  if (!c.url) throw new Error('Application non configurée.');
+  const headers = Object.assign({ apikey: c.key, 'Content-Type': 'application/json' }, o.headers || {});
+  if (o.auth !== false && session) headers.Authorization = 'Bearer ' + session.access_token;
+  let res;
+  try { res = await fetch(c.url + path, { method: o.method || 'GET', headers, body: o.body !== undefined ? JSON.stringify(o.body) : undefined }); }
+  catch (e) { throw new Error('Pas de connexion internet. Réessayez.'); }
+  const txt = await res.text(); let data = null;
+  if (txt) { try { data = JSON.parse(txt); } catch (e) { data = txt; } }
+  if (!res.ok) {
+    const m = (data && (data.message || data.msg || data.error_description || data.error)) || ('Erreur ' + res.status);
+    const err = new Error(tr(String(m))); err.status = res.status; throw err;
+  }
+  return data;
+}
+async function ensureSession() {
+  if (!session || session.expires_at - 60 > Date.now() / 1000) return;
+  try { setSession(await raw('/auth/v1/token?grant_type=refresh_token', { method: 'POST', auth: false, body: { refresh_token: session.refresh_token } })); }
+  catch (e) { if (e.status && e.status < 500) { setSession(null); A.screen = 'auth'; render(); } throw e; }
+}
+async function db(path, o = {}) { await ensureSession(); return raw('/rest/v1' + path, o); }
+const rpc = (name, args) => db('/rpc/' + name, { method: 'POST', body: args || {} });
+const insert = (table, row) => db('/' + table, { method: 'POST', body: row, headers: { Prefer: 'return=representation' } });
+function myUid() {
+  if (session && session.user && session.user.id) return session.user.id;
+  try { return JSON.parse(atob(session.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).sub; } catch (e) { return null; }
 }
 
-/* ---------- Stockage sur l'appareil ---------- */
-async function load() {
-  try { const r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch (e) {}
-  return mem;
-}
-async function save() {
-  mem = JSON.parse(JSON.stringify(S));
-  try { localStorage.setItem(KEY, JSON.stringify(S)); }
-  catch (e) { console.error(e); toast("Impossible d'enregistrer sur cet appareil"); }
-}
-
-/* ---------- Calculs ---------- */
-const confirmed = () => S.entries.filter(e => e.statut === 'confirme');
-const approved = () => S.sorties.filter(s => s.statut === 'approuve');
+/* ---------- État ---------- */
+const A = { screen: 'boot', groups: [], gid: null, me: null, members: [], events: [], entries: [], sorties: [], invites: [] };
+const ui = { tab: 'home', mode: 'mensuelle', month: ymNow, rep: 'all', evSel: '', authMode: 'login', gMode: 'join', busy: false, msg: '' };
+const G = () => A.groups.find(g => g.id === A.gid) || {};
+const COT = () => G().cotisation || 2000;
+const isAdmin = () => !!A.me && A.me.role === 'admin';
+const mName = id => { const m = A.members.find(m => m.id === id); return m ? m.nom : 'Membre retiré'; };
+const evTitle = id => { const v = A.events.find(v => v.id === id); return v ? v.titre : ''; };
+const entryWho = e => e.member_id ? mName(e.member_id) : (e.nom_libre || 'Anonyme');
+const confirmed = () => A.entries.filter(e => e.statut === 'confirme');
+const approved = () => A.sorties.filter(s => s.statut === 'approuve');
 const total = a => a.reduce((t, x) => t + x.montant, 0);
 const solde = () => total(confirmed()) - total(approved());
-const memberName = id => { const m = S.members.find(m => m.id === id); return m ? m.nom : 'Membre retiré'; };
-const eventTitle = id => { const v = S.events.find(v => v.id === id); return v ? v.titre : ''; };
-const entryWho = e => e.memberId ? memberName(e.memberId) : (e.nomLibre || 'Anonyme');
 function monthStatus(id, ym) {
-  const l = S.entries.filter(e => e.type === 'mensuelle' && e.memberId === id && e.mois === ym);
+  const l = A.entries.filter(e => e.type === 'mensuelle' && e.member_id === id && e.mois === ym);
   if (l.some(e => e.statut === 'confirme')) return 'paye';
   if (l.some(e => e.statut === 'attente')) return 'attente';
   return 'non';
 }
 function movements() {
   const a = confirmed().map(e => ({
-    date: e.decidedAt, sens: 'in', montant: e.montant, qui: entryWho(e),
-    titre: e.type === 'mensuelle' ? 'Cotisation mensuelle de ' + monthLabel(e.mois) : "Cotisation d'occasion",
-    cat: e.type === 'mensuelle' ? 'Cotisations mensuelles' : (eventTitle(e.eventId) || 'Occasion')
+    date: e.decided_at || e.created_at, sens: 'in', montant: e.montant, qui: entryWho(e),
+    titre: e.type === 'mensuelle' ? 'Cotisation de ' + monthLabel(e.mois) : "Cotisation d'occasion",
+    cat: e.type === 'mensuelle' ? 'Cotisations mensuelles' : (evTitle(e.event_id) || 'Occasion')
   }));
   const b = approved().map(s => ({
-    date: s.decidedAt, sens: 'out', montant: s.montant, qui: s.demandeur,
-    titre: s.motif, cat: eventTitle(s.eventId) || 'Hors occasion'
+    date: s.decided_at || s.created_at, sens: 'out', montant: s.montant, qui: s.demandeur,
+    titre: s.motif, cat: evTitle(s.event_id) || 'Hors occasion'
   }));
   return a.concat(b).sort((x, y) => new Date(y.date) - new Date(x.date));
 }
 
-/* ---------- Fenêtres (modales) ---------- */
-function openModal(html) { const m = document.getElementById('modal'); m.innerHTML = '<div class="sheet">' + html + '</div>'; m.hidden = false; return m; }
-function closeModal() { const m = document.getElementById('modal'); m.hidden = true; m.innerHTML = ''; }
-
-// force = true : le PIN est redemandé à chaque fois (sorties d'argent)
-function askPin(o) {
-  if (!o.force && Date.now() < ui.unlocked) { o.ok(); return; }
-  openModal(`<h3>${esc(o.title)}</h3><p class="muted">${esc(o.detail || '')}</p>
-    <input id="pin-in" type="password" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Code PIN du gestionnaire" aria-label="Code PIN">
-    <div id="pin-err" class="err"></div>
-    <div class="btns"><button class="ghost" onclick="closeModal()">Annuler</button><button class="primary" id="pin-ok">Valider</button></div>`);
-  const inp = document.getElementById('pin-in'); inp.focus();
-  const go = async () => {
-    if (await hashPin(inp.value) === S.pinHash) {
-      if (!o.force) { ui.unlocked = Date.now() + 5 * 60000; }
-      closeModal(); o.ok(); render();
-    } else { document.getElementById('pin-err').textContent = 'Code PIN incorrect.'; inp.value = ''; inp.focus(); }
-  };
-  document.getElementById('pin-ok').onclick = go;
-  inp.onkeydown = e => { if (e.key === 'Enter') go(); };
+/* ---------- Chargement ---------- */
+async function loadAll() {
+  const groups = await db('/groups?select=*&order=created_at.asc');
+  A.groups = groups;
+  if (!groups.length) { A.gid = null; A.me = null; A.screen = 'nogroup'; return; }
+  const saved = LS.get('gid');
+  A.gid = groups.some(g => g.id === A.gid) ? A.gid : (groups.some(g => g.id === saved) ? saved : groups[0].id);
+  const q = 'group_id=eq.' + A.gid;
+  const [members, events, entries, sorties, invites] = await Promise.all([
+    db(`/members?select=*&${q}&order=created_at.asc`),
+    db(`/events?select=*&${q}&order=date.desc`),
+    db(`/entries?select=*&${q}&order=created_at.desc`),
+    db(`/sorties?select=*&${q}&order=created_at.desc`),
+    db(`/invites?select=*&${q}`)
+  ]);
+  Object.assign(A, { members, events, entries, sorties, invites });
+  A.me = members.find(m => m.user_id === myUid() && m.actif) || null;
+  A.screen = A.me ? 'main' : 'nogroup';
+}
+async function refresh() { try { await loadAll(); } catch (e) { handleErr(e); } render(); }
+function handleErr(e) {
+  if (e.status === 401) { setSession(null); A.screen = 'auth'; render(); return; }
+  toast(e.message || 'Une erreur est survenue', true);
+}
+async function run(fn, okMsg) {
+  if (ui.busy) return; ui.busy = true;
+  try { await fn(); if (okMsg) toast(okMsg); } catch (e) { handleErr(e); }
+  finally { ui.busy = false; }
 }
 
-/* ---------- Configuration initiale ---------- */
-async function doSetup() {
-  const nom = val('s-nom').trim() || 'Caisse du groupe', p = val('s-pin'), p2 = val('s-pin2');
-  const err = document.getElementById('s-err');
-  if (!/^\d{4,6}$/.test(p)) { err.textContent = 'Le code PIN doit contenir 4 à 6 chiffres.'; return; }
-  if (p !== p2) { err.textContent = 'Les deux codes PIN ne sont pas identiques.'; return; }
-  S.nom = nom; S.pinHash = await hashPin(p);
-  await save(); render(); toast('Caisse créée');
+/* ---------- Fenêtres basses ---------- */
+function openSheet(html) {
+  const m = $('modal'); m.innerHTML = '<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>' + html + '</div>';
+  m.hidden = false; document.body.classList.add('noscroll'); m.onclick = e => { if (e.target === m) closeSheet(); };
 }
-function changePin() {
-  askPin({ title: 'Changer le code PIN', detail: 'Saisissez d\'abord le code actuel.', force: true, ok: () => {
-    openModal(`<h3>Nouveau code PIN</h3>
-      <input id="n-pin" type="password" inputmode="numeric" maxlength="6" placeholder="Nouveau code (4 à 6 chiffres)">
-      <input id="n-pin2" type="password" inputmode="numeric" maxlength="6" placeholder="Confirmer le nouveau code" style="margin-top:10px">
-      <div id="n-err" class="err"></div>
-      <div class="btns"><button class="ghost" onclick="closeModal()">Annuler</button><button class="primary" onclick="saveNewPin()">Enregistrer</button></div>`);
-  }});
-}
-async function saveNewPin() {
-  const p = val('n-pin'), p2 = val('n-pin2'), err = document.getElementById('n-err');
-  if (!/^\d{4,6}$/.test(p)) { err.textContent = 'Le code PIN doit contenir 4 à 6 chiffres.'; return; }
-  if (p !== p2) { err.textContent = 'Les deux codes ne sont pas identiques.'; return; }
-  S.pinHash = await hashPin(p); await save(); closeModal(); toast('Code PIN modifié');
-}
-function lockNow() { ui.unlocked = 0; render(); toast('Gestionnaire verrouillé'); }
+function closeSheet() { const m = $('modal'); m.hidden = true; m.innerHTML = ''; document.body.classList.remove('noscroll'); }
+const sheetErr = m => { const e = $('sh-err'); if (e) e.textContent = m; };
 
-/* ---------- Actions : membres ---------- */
-async function addMember() {
-  const nom = val('m-nom').trim();
-  if (!nom) return toast('Saisissez le nom du membre');
-  S.members.push({ id: uid(), nom, tel: val('m-tel').trim(), actif: true, creeLe: new Date().toISOString() });
-  await save(); render(); toast('Membre ajouté');
+/* ---------- Authentification ---------- */
+function setCfg() {
+  const url = val('c-url').trim().replace(/\/+$/, ''), key = val('c-key').trim();
+  if (!/^https:\/\/.+/.test(url) || key.length < 20) return toast('Adresse ou clé invalide', true);
+  LS.set('cfg', { url, key }); boot();
+}
+function setAuthMode(m) { ui.authMode = m; ui.msg = ''; render(); }
+function doAuth() {
+  run(async () => {
+    const email = val('a-mail').trim().toLowerCase(), pw = val('a-pw');
+    if (!/^\S+@\S+\.\S+$/.test(email)) throw new Error('Adresse mail invalide.');
+    if (pw.length < 6) throw new Error('Le mot de passe doit contenir au moins 6 caractères.');
+    if (ui.authMode === 'signup') {
+      const d = await raw('/auth/v1/signup', { method: 'POST', auth: false, body: { email, password: pw } });
+      if (d && d.access_token) setSession(d);
+      else { ui.msg = 'Compte créé. Confirmez votre adresse mail, puis connectez-vous.'; ui.authMode = 'login'; render(); return; }
+    } else {
+      setSession(await raw('/auth/v1/token?grant_type=password', { method: 'POST', auth: false, body: { email, password: pw } }));
+    }
+    ui.msg = ''; await loadAll(); render();
+  });
+}
+function logout() { closeSheet(); setSession(null); LS.del('gid'); Object.assign(A, { screen: 'auth', groups: [], gid: null, me: null }); ui.tab = 'home'; render(); }
+function setGMode(m) { ui.gMode = m; render(); }
+function doJoin() {
+  run(async () => {
+    const code = val('g-code').trim();
+    if (!/^\d{6}$/.test(code)) throw new Error("Saisissez le code à 6 chiffres donné par l'administrateur.");
+    const gid = await rpc('claim_invite', { p_code: code });
+    if (!gid) throw new Error("Code incorrect, ou ce code n'est pas associé à votre adresse mail.");
+    await loadAll(); render();
+  }, 'Bienvenue dans le groupe');
+}
+function doCreateGroup() {
+  run(async () => {
+    const p = val('g-pin'), p2 = val('g-pin2');
+    if (p !== p2) throw new Error('Les deux codes PIN ne sont pas identiques.');
+    await rpc('create_group', { p_nom: val('g-nom'), p_admin_nom: val('g-moi'), p_pin: p });
+    await loadAll(); render();
+  }, 'Groupe créé');
+}
+
+/* ---------- Membres ---------- */
+function addMember() {
+  run(async () => {
+    const nom = val('m-nom').trim(), email = val('m-mail').trim().toLowerCase();
+    if (nom.length < 2) throw new Error('Saisissez le nom du membre.');
+    if (!/^\S+@\S+\.\S+$/.test(email)) throw new Error('Adresse mail invalide.');
+    const [m] = await insert('members', { group_id: A.gid, email, nom, tel: val('m-tel').trim() || null, role: 'membre' });
+    await loadAll(); render();
+    showInvite(m.id);
+  });
+}
+function showInvite(id) {
+  const m = A.members.find(x => x.id === id), inv = A.invites.find(i => i.member_id === id);
+  if (!m) return;
+  if (!inv) return toast(m.user_id ? 'Ce membre est déjà connecté' : 'Code indisponible, générez-en un nouveau', true);
+  openSheet(`<h3>Invitation de ${esc(m.nom)}</h3>
+    <p class="muted">Envoyez-lui ce code. Il devra créer son compte avec l'adresse <b>${esc(m.email)}</b>, puis saisir le code.</p>
+    <div class="bigcode">${esc(inv.code)}</div>
+    <div class="btns"><button class="btn line" onclick="newInvite('${m.id}')">Nouveau code</button><button class="btn primary" onclick="shareInvite('${m.id}')">${ic('share', 18)} Partager</button></div>`);
+}
+function shareInvite(id) {
+  const m = A.members.find(x => x.id === id), inv = A.invites.find(i => i.member_id === id); if (!m || !inv) return;
+  const text = `Bonjour ${m.nom}, rejoins le groupe « ${G().nom} » sur l'application Caisse du groupe.\n1) Ouvre l'application et crée un compte avec cette adresse : ${m.email}\n2) Saisis ce code d'invitation : ${inv.code}`;
+  if (navigator.share) navigator.share({ text }).catch(() => {});
+  else if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => toast('Message copié'), () => toast('Copie impossible', true));
+}
+function newInvite(id) {
+  run(async () => { await rpc('reset_invite', { p_member: id }); await loadAll(); render(); showInvite(id); });
 }
 function removeMember(id) {
-  askPin({ title: 'Retirer ce membre ?', detail: 'Son historique de cotisations est conservé dans le rapport.', ok: async () => {
-    const m = S.members.find(m => m.id === id); if (m) m.actif = false; await save(); toast('Membre retiré');
-  }});
+  openSheet(`<h3>Retirer ce membre ?</h3><p class="muted">${esc(mName(id))} n'aura plus accès au groupe. Son historique reste dans le rapport.</p>
+    <div class="btns"><button class="btn line" onclick="closeSheet()">Annuler</button><button class="btn danger" onclick="doRemove('${id}')">Retirer</button></div>`);
+}
+function doRemove(id) {
+  run(async () => { await db('/members?id=eq.' + id, { method: 'PATCH', body: { actif: false } }); closeSheet(); await loadAll(); render(); }, 'Membre retiré');
 }
 
-/* ---------- Actions : entrées d'argent ---------- */
+function askRole(id, role) {
+  const n = esc(mName(id)), up = role === 'admin';
+  openSheet(`<h3>${up ? 'Nommer administrateur ?' : 'Retirer les droits admin ?'}</h3>
+    <p class="muted">${up ? n + ' pourra confirmer les entrées, autoriser les sorties avec le code PIN, et gérer les membres et les évènements. Pensez à lui communiquer le code PIN.' : n + ' redeviendra simple membre.'}</p>
+    <div class="btns"><button class="btn line" onclick="closeSheet()">Annuler</button><button class="btn primary" onclick="doRole('${id}','${role}')">Confirmer</button></div>`);
+}
+function doRole(id, role) {
+  run(async () => { await db('/members?id=eq.' + id, { method: 'PATCH', body: { role } }); closeSheet(); await loadAll(); render(); },
+    role === 'admin' ? 'Nouvel administrateur nommé' : 'Droits administrateur retirés');
+}
+
+/* ---------- Entrées d'argent ---------- */
 function setMode(m) { ui.mode = m; render(); }
-async function recordMonthly(memberId) {
+function recordMonthly(memberId) {
   if (monthStatus(memberId, ui.month) !== 'non') return;
-  S.entries.push({ id: uid(), type: 'mensuelle', memberId, mois: ui.month, montant: MENSUEL, statut: 'attente', date: new Date().toISOString() });
-  await save(); render(); toast('Paiement enregistré, à confirmer');
+  run(async () => {
+    await insert('entries', { group_id: A.gid, type: 'mensuelle', member_id: memberId, mois: ui.month, montant: COT(), statut: isAdmin() ? 'confirme' : 'attente' });
+    await loadAll(); render();
+  }, isAdmin() ? 'Encaissé et ajouté aux fonds' : 'Paiement déclaré, en attente de confirmation');
 }
-async function addOccasion() {
-  const eventId = val('o-ev'), who = val('o-who'), montant = parseAmt(val('o-mt'));
-  if (!eventId) return toast('Choisissez une occasion');
-  if (!montant) return toast('Saisissez un montant en ariary');
-  const e = { id: uid(), type: 'occasion', eventId, montant, statut: 'attente', date: new Date().toISOString() };
-  if (who === '_autre') { e.nomLibre = val('o-free').trim(); if (!e.nomLibre) return toast('Saisissez le nom de la personne'); }
-  else e.memberId = who;
-  ui.evSel = eventId; S.entries.push(e);
-  await save(); render(); toast('Cotisation enregistrée, à confirmer');
+function addOccasion() {
+  run(async () => {
+    const eventId = val('o-ev'), montant = parseAmt(val('o-mt'));
+    if (!eventId) throw new Error('Choisissez une occasion.');
+    if (!montant) throw new Error('Saisissez un montant en ariary.');
+    const row = { group_id: A.gid, type: 'occasion', event_id: eventId, montant, statut: isAdmin() ? 'confirme' : 'attente' };
+    const who = isAdmin() ? val('o-who') : A.me.id;
+    if (who === '_autre') { row.nom_libre = val('o-free').trim(); if (!row.nom_libre) throw new Error('Saisissez le nom de la personne.'); }
+    else row.member_id = who;
+    ui.evSel = eventId; await insert('entries', row); await loadAll(); render();
+  }, isAdmin() ? 'Encaissé et ajouté aux fonds' : 'Cotisation déclarée, en attente de confirmation');
 }
-function confirmEntry(id) {
-  askPin({ title: 'Confirmer cet argent reçu', detail: 'Le montant sera ajouté aux fonds.', ok: async () => {
-    const e = S.entries.find(e => e.id === id); if (!e || e.statut !== 'attente') return;
-    e.statut = 'confirme'; e.decidedAt = new Date().toISOString(); await save(); render(); toast('Confirmé : ' + fmt(e.montant) + ' ajoutés aux fonds');
-  }});
-}
-function rejectEntry(id) {
-  askPin({ title: 'Refuser cette entrée ?', detail: 'Elle ne sera pas ajoutée aux fonds.', ok: async () => {
-    const e = S.entries.find(e => e.id === id); if (!e) return;
-    e.statut = 'refuse'; e.decidedAt = new Date().toISOString(); await save(); render(); toast('Entrée refusée');
-  }});
+function decideEntry(id, ok) {
+  run(async () => { await rpc('decide_entry', { p_id: id, p_ok: ok }); await loadAll(); render(); }, ok ? 'Confirmé : ajouté aux fonds' : 'Entrée refusée');
 }
 
-/* ---------- Actions : sorties d'argent ---------- */
-async function addSortie() {
-  const montant = parseAmt(val('s-mt')), motif = val('s-motif').trim(), who = val('s-who');
-  if (!montant) return toast('Saisissez un montant en ariary');
-  if (motif.length < 3) return toast('Le motif est obligatoire');
-  let demandeur = who === '_autre' ? val('s-free').trim() : memberName(who);
-  if (!demandeur) return toast('Indiquez qui fait la demande');
-  S.sorties.push({ id: uid(), montant, motif, demandeur, eventId: val('s-ev'), statut: 'attente', date: new Date().toISOString() });
-  await save(); render(); toast('Demande envoyée au gestionnaire');
+/* ---------- Sorties d'argent ---------- */
+function addSortie() {
+  run(async () => {
+    const montant = parseAmt(val('s-mt')), motif = val('s-motif').trim();
+    if (!montant) throw new Error('Saisissez un montant en ariary.');
+    if (motif.length < 3) throw new Error('Le motif est obligatoire.');
+    let demandeur = A.me.nom;
+    if (isAdmin()) { const w = val('s-who'); demandeur = w === '_autre' ? val('s-free').trim() : mName(w); if (!demandeur) throw new Error('Indiquez qui fait la demande.'); }
+    await insert('sorties', { group_id: A.gid, montant, motif, demandeur, event_id: val('s-ev') || null, statut: 'attente', created_by: myUid() });
+    await loadAll(); render();
+  }, "Demande envoyée à l'administrateur");
 }
 function approveSortie(id) {
-  const s = S.sorties.find(s => s.id === id); if (!s) return;
-  if (s.montant > solde()) return toast('Fonds insuffisants. Solde : ' + fmt(solde()));
-  askPin({ title: 'Autoriser la sortie de ' + fmt(s.montant), detail: 'Motif : ' + s.motif, force: true, ok: async () => {
-    s.statut = 'approuve'; s.decidedAt = new Date().toISOString(); await save(); render(); toast('Sortie autorisée');
-  }});
+  const s = A.sorties.find(x => x.id === id); if (!s) return;
+  if (s.montant > solde()) return toast('Fonds insuffisants. Solde : ' + fmt(solde()), true);
+  openSheet(`<h3>Autoriser cette sortie</h3><div class="big-amt" style="color:var(--red)">${fmt(s.montant)}</div>
+    <p class="muted">Motif : ${esc(s.motif)}<br>Demandé par ${esc(s.demandeur)}</p>
+    <div class="field" style="margin-top:14px"><label>Code PIN du gestionnaire</label><input id="pin-in" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••"></div>
+    <div id="sh-err" class="err"></div>
+    <div class="btns"><button class="btn line" onclick="closeSheet()">Annuler</button><button class="btn primary" id="pin-ok">${ic('lock', 18)} Autoriser</button></div>`);
+  const go = async () => {
+    if (ui.busy) return; ui.busy = true;
+    try { await rpc('decide_sortie', { p_id: id, p_ok: true, p_pin: val('pin-in') }); closeSheet(); await loadAll(); render(); toast('Sortie autorisée'); }
+    catch (e) { sheetErr(e.message); const i = $('pin-in'); if (i) { i.value = ''; i.focus(); } }
+    finally { ui.busy = false; }
+  };
+  $('pin-ok').onclick = go; $('pin-in').onkeydown = e => { if (e.key === 'Enter') go(); }; $('pin-in').focus();
 }
 function refuseSortie(id) {
-  askPin({ title: 'Refuser cette demande ?', detail: 'Aucun argent ne sortira des fonds.', ok: async () => {
-    const s = S.sorties.find(s => s.id === id); if (!s) return;
-    s.statut = 'refuse'; s.decidedAt = new Date().toISOString(); await save(); render(); toast('Demande refusée');
-  }});
+  run(async () => { await rpc('decide_sortie', { p_id: id, p_ok: false, p_pin: '' }); await loadAll(); render(); }, 'Demande refusée');
 }
 
-/* ---------- Actions : évènements ---------- */
-async function addEvent() {
-  const titre = val('v-titre').trim(); if (!titre) return toast("Donnez un nom à l'évènement");
-  S.events.push({ id: uid(), titre, date: val('v-date') || new Date().toISOString().slice(0, 10), note: val('v-note').trim() });
-  await save(); render(); toast('Évènement ajouté');
+/* ---------- Évènements ---------- */
+function addEvent() {
+  run(async () => {
+    const titre = val('v-titre').trim(); if (!titre) throw new Error("Donnez un nom à l'évènement.");
+    await insert('events', { group_id: A.gid, titre, date: val('v-date') || new Date().toISOString().slice(0, 10), note: val('v-note').trim() || null });
+    await loadAll(); render();
+  }, 'Évènement ajouté');
 }
 function deleteEvent(id) {
-  askPin({ title: "Supprimer l'évènement ?", ok: async () => { S.events = S.events.filter(v => v.id !== id); await save(); toast('Évènement supprimé'); }});
+  run(async () => { await db('/events?id=eq.' + id, { method: 'DELETE' }); await loadAll(); render(); }, 'Évènement supprimé');
 }
 function goCotiser(id) { ui.tab = 'entrees'; ui.mode = 'occasion'; ui.evSel = id; render(); window.scrollTo(0, 0); }
 
-/* ---------- Export ---------- */
+/* ---------- Profil ---------- */
+function openProfile() {
+  openSheet(`<div style="display:flex;gap:14px;align-items:center;margin-bottom:14px">${avatar(A.me.nom)}<div><h3 style="margin:0">${esc(A.me.nom)}</h3><div class="muted">${esc(A.me.email)}</div></div></div>
+    <p style="margin-bottom:14px"><span class="chip ${isAdmin() ? 'ok' : 'no'}">${isAdmin() ? 'Administrateur' : 'Membre'}</span> <span class="muted">dans ${esc(G().nom)}</span></p>
+    ${A.groups.length > 1 ? `<div class="field"><label>Changer de groupe</label><select onchange="switchGroup(this.value)">${A.groups.map(g => `<option value="${g.id}" ${g.id === A.gid ? 'selected' : ''}>${esc(g.nom)}</option>`).join('')}</select></div>` : ''}
+    ${isAdmin() ? `<button class="btn soft wide" style="margin-bottom:10px" onclick="openPinChange()">${ic('lock', 18)} Changer le code PIN</button>` : ''}
+    <button class="btn line wide" onclick="logout()">Se déconnecter</button>`);
+}
+function switchGroup(id) { A.gid = id; LS.set('gid', id); closeSheet(); refresh(); }
+function openPinChange() {
+  openSheet(`<h3>Changer le code PIN</h3>
+    <div class="field"><label>Code actuel</label><input id="p-old" type="password" inputmode="numeric" maxlength="6" autocomplete="off"></div>
+    <div class="field"><label>Nouveau code (4 à 6 chiffres)</label><input id="p-new" type="password" inputmode="numeric" maxlength="6" autocomplete="off"></div>
+    <div id="sh-err" class="err"></div>
+    <div class="btns"><button class="btn line" onclick="closeSheet()">Annuler</button><button class="btn primary" onclick="savePin()">Enregistrer</button></div>`);
+}
+function savePin() {
+  if (ui.busy) return; ui.busy = true;
+  rpc('change_pin', { p_gid: A.gid, p_old: val('p-old'), p_new: val('p-new') })
+    .then(() => { closeSheet(); toast('Code PIN modifié'); }, e => sheetErr(e.message))
+    .finally(() => { ui.busy = false; });
+}
+
+/* ---------- Rapport ---------- */
 function reportMovs() { return movements().filter(m => ui.rep === 'all' || ymOf(m.date) === ui.rep); }
 function exportCsv() {
   const q = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
   const rows = [['Date', 'Type', 'Montant (Ar)', 'Occasion / catégorie', 'Libellé / motif', 'Personne'].map(q).join(';')];
   reportMovs().forEach(m => rows.push([new Date(m.date).toLocaleDateString('fr-FR'), m.sens === 'in' ? 'Entrée' : 'Sortie', (m.sens === 'in' ? '' : '-') + m.montant, m.cat, m.titre, m.qui].map(q).join(';')));
-  if (window.AndroidBridge) { window.AndroidBridge.saveFile('rapport-caisse.csv', '\ufeff' + rows.join('\n')); return; }
-  const blob = new Blob(['\ufeff' + rows.join('\n')], { type: 'text/csv;charset=utf-8' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'rapport-caisse.csv';
+  const csv = '\ufeff' + rows.join('\n');
+  if (window.AndroidBridge) { window.AndroidBridge.saveFile('rapport-caisse.csv', csv); return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = 'rapport-caisse.csv';
   document.body.appendChild(a); a.click(); a.remove();
 }
 
 /* ---------- Vues ---------- */
-const chip = st => ({ paye: ['Payé', 'ok'], attente: ['À confirmer', 'wait'], non: ['Non payé', 'no'], confirme: ['Confirmé', 'ok'], approuve: ['Autorisé', 'ok'], refuse: ['Refusé', 'bad'] }[st]);
-const chipHtml = st => { const c = chip(st); return `<span class="chip ${c[1]}">${c[0]}</span>`; };
-const moveRow = m => `<li class="row"><div><div class="t">${esc(m.titre)}</div><div class="s">${esc(m.qui)}, ${fmtDate(m.date)}</div><span class="tag">${esc(m.cat)}</span></div><div class="amt ${m.sens}">${m.sens === 'in' ? '+' : '−'}${fmt(m.montant)}</div></li>`;
-const memberOptions = () => S.members.filter(m => m.actif).map(m => `<option value="${m.id}">${esc(m.nom)}</option>`).join('') + '<option value="_autre">Autre personne</option>';
-const eventOptions = (sel, none) => (none ? `<option value="">${none}</option>` : '') + S.events.slice().sort((a, b) => b.date.localeCompare(a.date)).map(v => `<option value="${v.id}" ${v.id === sel ? 'selected' : ''}>${esc(v.titre)}</option>`).join('');
+const chipOf = st => ({ paye: ['Payé', 'ok'], attente: ['En attente', 'wait'], non: ['Non payé', 'no'], confirme: ['Confirmé', 'ok'], approuve: ['Autorisé', 'ok'], refuse: ['Refusé', 'bad'] }[st]);
+const chip = st => { const c = chipOf(st); return `<span class="chip ${c[1]}">${c[0]}</span>`; };
+const moveRow = m => `<li class="row"><span class="mv ${m.sens}">${ic(m.sens === 'in' ? 'inflow' : 'outflow', 20)}</span><div class="body"><div class="t">${esc(m.titre)}</div><div class="s">${esc(m.qui)}, ${fmtDate(m.date)}</div><span class="tag">${esc(m.cat)}</span></div><div class="amt ${m.sens}">${m.sens === 'in' ? '+' : '−'}${fmt(m.montant)}</div></li>`;
+const emptyBox = t => `<div class="card empty">${t}</div>`;
+const memberOptions = () => A.members.filter(m => m.actif).map(m => `<option value="${m.id}">${esc(m.nom)}</option>`).join('') + '<option value="_autre">Autre personne</option>';
+const eventOptions = (sel, none) => (none ? `<option value="">${none}</option>` : '') + A.events.map(v => `<option value="${v.id}" ${v.id === sel ? 'selected' : ''}>${esc(v.titre)}</option>`).join('');
+const sec = (t, extra = '') => `<div class="sec"><h3>${t}</h3>${extra}</div>`;
 
-function setupView() {
-  return `<div class="setup"><h1>Caisse du groupe</h1>
-  <p class="muted">Créez le groupe et le code PIN du gestionnaire. Ce code sera demandé pour autoriser chaque sortie d'argent.</p>
-  <label>Nom du groupe<input id="s-nom" placeholder="Ex. Association des amis"></label>
-  <label>Code PIN (4 à 6 chiffres)<input id="s-pin" type="password" inputmode="numeric" maxlength="6"></label>
-  <label>Confirmer le code PIN<input id="s-pin2" type="password" inputmode="numeric" maxlength="6"></label>
-  <div id="s-err" class="err"></div>
-  <button class="primary wide" onclick="doSetup()">Créer la caisse</button></div>`;
+function authScreen() {
+  const logo = `<svg class="logo" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="38" fill="#0B6B3A"/><circle cx="38" cy="38" r="29" fill="#fff"/><text x="38" y="47" text-anchor="middle" font-family="Segoe UI,Roboto,sans-serif" font-weight="800" font-size="26" fill="#0B6B3A">Ar</text><rect x="14" y="66" width="16" height="4" rx="2" fill="#fff"/><rect x="30" y="66" width="16" height="4" rx="2" fill="#FC3D32"/><rect x="46" y="66" width="16" height="4" rx="2" fill="#2BB673"/></svg>`;
+  const su = ui.authMode === 'signup';
+  return `<div class="auth view">${logo}<h1>Caisse du groupe</h1><p class="tag2">Les fonds du groupe, clairs pour tous.</p>
+    <div class="seg"><button class="${!su ? 'on' : ''}" onclick="setAuthMode('login')">Connexion</button><button class="${su ? 'on' : ''}" onclick="setAuthMode('signup')">Créer un compte</button></div>
+    <div class="card">${ui.msg ? `<div class="ok-msg">${esc(ui.msg)}</div>` : ''}
+      <div class="field"><label>Adresse mail</label><input id="a-mail" type="email" inputmode="email" autocomplete="email" placeholder="vous@exemple.com"></div>
+      <div class="field"><label>Mot de passe</label><input id="a-pw" type="password" autocomplete="${su ? 'new-password' : 'current-password'}" placeholder="6 caractères minimum" onkeydown="if(event.key==='Enter')doAuth()"></div>
+      <button class="btn primary wide" onclick="doAuth()">${su ? 'Créer mon compte' : 'Me connecter'}</button></div>
+    ${su ? '<p class="muted" style="text-align:center">Utilisez l\'adresse mail que l\'administrateur a enregistrée pour vous.</p>' : ''}</div>`;
+}
+function configScreen() {
+  return `<div class="auth view"><h1>Configuration</h1><p class="tag2">Collez les informations de votre projet Supabase.</p>
+    <div class="card"><div class="field"><label>Adresse du projet (https://…supabase.co)</label><input id="c-url" inputmode="url" autocapitalize="off"></div>
+    <div class="field"><label>Clé publique (anon / publishable)</label><input id="c-key" autocapitalize="off"></div>
+    <button class="btn primary wide" onclick="setCfg()">Enregistrer</button></div></div>`;
+}
+function noGroupScreen() {
+  const j = ui.gMode === 'join';
+  return `<div class="auth view"><h1>Votre groupe</h1><p class="tag2">${esc(session && session.user ? session.user.email : '')}</p>
+    <div class="seg"><button class="${j ? 'on' : ''}" onclick="setGMode('join')">J'ai un code</button><button class="${!j ? 'on' : ''}" onclick="setGMode('create')">Créer un groupe</button></div>
+    ${j ? `<div class="card"><p class="muted" style="margin-bottom:12px">Saisissez le code d'invitation à 6 chiffres que l'administrateur vous a envoyé.</p>
+      <div class="field"><label>Code d'invitation</label><input id="g-code" inputmode="numeric" maxlength="6" placeholder="000000" style="text-align:center;font-size:24px;letter-spacing:6px;font-weight:700" onkeydown="if(event.key==='Enter')doJoin()"></div>
+      <button class="btn primary wide" onclick="doJoin()">Rejoindre le groupe</button></div>`
+    : `<div class="card"><div class="field"><label>Nom du groupe</label><input id="g-nom" placeholder="Ex. Association des amis"></div>
+      <div class="field"><label>Votre nom</label><input id="g-moi" autocomplete="name"></div>
+      <div class="field"><label>Code PIN du gestionnaire (4 à 6 chiffres)</label><input id="g-pin" type="password" inputmode="numeric" maxlength="6" autocomplete="off"></div>
+      <div class="field"><label>Confirmer le code PIN</label><input id="g-pin2" type="password" inputmode="numeric" maxlength="6" autocomplete="off"></div>
+      <button class="btn primary wide" onclick="doCreateGroup()">Créer le groupe</button></div>`}
+    <p style="text-align:center"><button class="link" onclick="logout()">Se déconnecter</button></p></div>`;
 }
 
-function viewFonds() {
-  const act = S.members.filter(m => m.actif);
+function viewHome() {
+  const act = A.members.filter(m => m.actif);
   const paid = act.filter(m => monthStatus(m.id, ymNow) === 'paye').length;
-  const pe = S.entries.filter(e => e.statut === 'attente').length, ps = S.sorties.filter(s => s.statut === 'attente').length;
+  const pe = A.entries.filter(e => e.statut === 'attente').length, ps = A.sorties.filter(s => s.statut === 'attente').length;
   const pct = act.length ? Math.round(paid / act.length * 100) : 0;
-  const rec = movements().slice(0, 5);
-  return `<div class="hero"><div class="lab">Fonds disponibles</div><div class="big">${fmt(solde())}</div>
-    <div class="two"><div>Entrées confirmées<b>${fmt(total(confirmed()))}</b></div><div>Sorties autorisées<b>${fmt(total(approved()))}</b></div></div>
-    <div class="stripe"><i></i><i></i><i></i></div></div>
-    ${pe ? `<div class="alert"><span>${pe} paiement${pe > 1 ? 's' : ''} à confirmer</span><button class="primary sm" onclick="go('entrees')">Voir</button></div>` : ''}
-    ${ps ? `<div class="alert"><span>${ps} demande${ps > 1 ? 's' : ''} de sortie en attente</span><button class="primary sm" onclick="go('sorties')">Voir</button></div>` : ''}
-    <h3>Cotisations de ${monthLabel(ymNow)}</h3>
-    <div class="card"><b>${paid} membre${paid > 1 ? 's' : ''} sur ${act.length}</b> ${act.length ? 'ont payé' : ''}
-      <div class="bar"><i style="width:${pct}%"></i></div>
-      <div class="muted">Attendu : ${fmt(act.length * MENSUEL)} (${fmt(MENSUEL)} par membre)</div></div>
-    <h3>Derniers mouvements</h3>
-    ${rec.length ? `<ul class="list">${rec.map(moveRow).join('')}</ul>` : '<p class="empty">Aucun mouvement pour l\'instant. Les entrées apparaissent ici une fois confirmées.</p>'}`;
+  const rec = movements().slice(0, 5), mySt = monthStatus(A.me.id, ymNow);
+  return `<div class="quick"><button class="btn soft" onclick="go('entrees')">${ic('inflow', 24)}Cotiser</button><button class="btn soft" onclick="go('sorties')">${ic('outflow', 24)}Demander une sortie</button></div>
+  ${isAdmin() && pe ? `<div class="alert"><span>${pe} paiement${pe > 1 ? 's' : ''} à confirmer</span><button class="btn sm primary" onclick="go('entrees')">Voir</button></div>` : ''}
+  ${isAdmin() && ps ? `<div class="alert"><span>${ps} demande${ps > 1 ? 's' : ''} de sortie</span><button class="btn sm primary" onclick="go('sorties')">Voir</button></div>` : ''}
+  ${sec('Cotisations de ' + monthLabel(ymNow))}
+  <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b>${paid} membre${paid > 1 ? 's' : ''} sur ${act.length} ont payé</b><span class="muted">${pct} %</span></div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <div class="muted">Attendu : ${fmt(act.length * COT())} (${fmt(COT())} par membre)</div>
+    <div style="margin-top:12px;display:flex;align-items:center;gap:8px"><span class="muted">Votre cotisation :</span>${chip(mySt)}</div></div>
+  ${sec('Derniers mouvements', `<button class="link" onclick="go('rapport')">Tout voir</button>`)}
+  ${rec.length ? `<ul class="list">${rec.map(moveRow).join('')}</ul>` : emptyBox('Aucun mouvement pour l\'instant.<br>Les entrées apparaissent ici une fois confirmées.')}`;
 }
 
 function viewMembres() {
-  const act = S.members.filter(m => m.actif);
-  return `<h2>Membres</h2>
-  <section class="card"><label>Nom<input id="m-nom" placeholder="Nom du membre"></label>
-  <label>Téléphone (facultatif)<input id="m-tel" inputmode="tel"></label>
-  <button class="primary wide" onclick="addMember()">Ajouter le membre</button></section>
-  <p class="muted">Chaque membre cotise ${fmt(MENSUEL)} par mois.</p>
-  ${act.length ? `<ul class="list">${act.map(m => {
-    const tot = total(confirmed().filter(e => e.memberId === m.id));
-    return `<li class="row"><div><div class="t">${esc(m.nom)}</div><div class="s">${m.tel ? esc(m.tel) + ', ' : ''}total versé : ${fmt(tot)}</div></div>
-    <div class="right">${chipHtml(monthStatus(m.id, ymNow))}<button class="link" onclick="removeMember('${m.id}')">Retirer</button></div></li>`;
-  }).join('')}</ul>` : '<p class="empty">Aucun membre pour l\'instant. Ajoutez le premier ci-dessus.</p>'}`;
+  const act = A.members.filter(m => m.actif), admin = isAdmin();
+  return `${admin ? `<div class="card"><div class="field"><label>Nom du membre</label><input id="m-nom" placeholder="Nom et prénom"></div>
+    <div class="field"><label>Adresse mail</label><input id="m-mail" type="email" inputmode="email" placeholder="membre@exemple.com"></div>
+    <div class="field"><label>Téléphone (facultatif)</label><input id="m-tel" inputmode="tel"></div>
+    <button class="btn primary wide" onclick="addMember()">${ic('plus', 18)} Ajouter et inviter</button></div>` : ''}
+  ${sec(act.length + ' membre' + (act.length > 1 ? 's' : ''), `<span class="muted">${fmt(COT())} par mois</span>`)}
+  <ul class="list">${act.map(m => {
+    const tot = total(confirmed().filter(e => e.member_id === m.id));
+    const pending = !m.user_id;
+    return `<li class="row">${avatar(m.nom)}<div class="body"><div class="t">${esc(m.nom)} ${m.role === 'admin' ? '<span class="chip ok">Admin</span>' : ''}</div>
+      <div class="s">${admin ? esc(m.email) + '<br>' : ''}Total versé : ${fmt(tot)}</div></div>
+      <div class="end">${pending ? '<span class="chip wait">Invité</span>' : chip(monthStatus(m.id, ymNow))}
+      ${admin && pending ? `<button class="btn sm soft" onclick="showInvite('${m.id}')">Code</button>` : ''}
+      ${admin && m.id !== A.me.id ? `<button class="link" onclick="askRole('${m.id}','${m.role === 'admin' ? 'membre' : 'admin'}')">${m.role === 'admin' ? 'Retirer admin' : 'Nommer admin'}</button><button class="link" onclick="removeMember('${m.id}')">Retirer</button>` : ''}</div></li>`;
+  }).join('')}</ul>`;
 }
 
 function viewEntrees() {
-  const act = S.members.filter(m => m.actif);
+  const admin = isAdmin(), cot = COT();
+  const seg = `<div class="seg"><button class="${ui.mode === 'mensuelle' ? 'on' : ''}" onclick="setMode('mensuelle')">Mensuelle</button><button class="${ui.mode === 'occasion' ? 'on' : ''}" onclick="setMode('occasion')">D'occasion</button></div>`;
   let body;
   if (ui.mode === 'mensuelle') {
-    body = `<label>Mois<input type="month" value="${ui.month}" onchange="ui.month=this.value||ymNow;render()"></label>
-    ${act.length ? `<ul class="list">${act.map(m => {
+    const list = admin ? A.members.filter(m => m.actif) : [A.me];
+    body = `<div class="card"><div class="field" style="margin:0"><label>Mois</label><input type="month" value="${ui.month}" onchange="ui.month=this.value||ymNow;render()"></div></div>
+    <ul class="list">${list.map(m => {
       const st = monthStatus(m.id, ui.month);
-      return `<li class="row"><div class="t">${esc(m.nom)}</div><div class="right">${chipHtml(st)}${st === 'non' ? `<button class="primary sm" onclick="recordMonthly('${m.id}')">Enregistrer ${fmt(MENSUEL)}</button>` : ''}</div></li>`;
-    }).join('')}</ul>` : '<p class="empty">Ajoutez d\'abord des membres.</p>'}`;
-  } else if (!S.events.length) {
-    body = `<p class="empty">Créez d'abord une occasion pour y rattacher les cotisations.</p><button class="primary wide" onclick="go('evenements')">Ajouter un évènement</button>`;
+      return `<li class="row">${avatar(m.nom)}<div class="body"><div class="t">${esc(m.nom)}</div><div class="s">${fmt(cot)}</div></div>
+      <div class="end">${chip(st)}${st === 'non' ? `<button class="btn sm primary" onclick="recordMonthly('${m.id}')">${admin ? 'Encaisser' : 'Déclarer mon paiement'}</button>` : ''}</div></li>`;
+    }).join('')}</ul>`;
+  } else if (!A.events.length) {
+    body = emptyBox(admin ? `Créez d'abord une occasion pour y rattacher les cotisations.<br><br><button class="btn primary" onclick="go('evenements')">Ajouter un évènement</button>` : "Aucune occasion n'a été créée pour l'instant.");
   } else {
-    body = `<section class="card"><label>Occasion<select id="o-ev">${eventOptions(ui.evSel)}</select></label>
-    <label>Qui cotise<select id="o-who" onchange="document.getElementById('o-free').hidden=this.value!=='_autre'">${memberOptions()}</select></label>
-    <input id="o-free" hidden placeholder="Nom de la personne" style="margin:-4px 0 12px">
-    <label>Montant (Ar)<input id="o-mt" inputmode="numeric" placeholder="Ex. 5000"></label>
-    <button class="primary wide" onclick="addOccasion()">Enregistrer la cotisation</button></section>`;
+    body = `<div class="card"><div class="field"><label>Occasion</label><select id="o-ev">${eventOptions(ui.evSel)}</select></div>
+    ${admin ? `<div class="field"><label>Qui cotise</label><select id="o-who" onchange="$('o-free').parentNode.hidden=this.value!=='_autre'">${memberOptions()}</select></div>
+    <div class="field" hidden><label>Nom de la personne</label><input id="o-free"></div>` : ''}
+    <div class="field"><label>Montant (Ar)</label><input id="o-mt" inputmode="numeric" placeholder="Ex. 5000"></div>
+    <button class="btn primary wide" onclick="addOccasion()">${admin ? 'Encaisser' : 'Déclarer ma cotisation'}</button></div>`;
   }
-  const pend = S.entries.filter(e => e.statut === 'attente').sort((a, b) => a.date.localeCompare(b.date));
-  return `<h2>Entrées d'argent</h2>
-  <div class="seg"><button class="${ui.mode === 'mensuelle' ? 'on' : ''}" onclick="setMode('mensuelle')">Cotisation mensuelle</button><button class="${ui.mode === 'occasion' ? 'on' : ''}" onclick="setMode('occasion')">Cotisation d'occasion</button></div>
-  ${body}
-  <h3>À confirmer par le gestionnaire</h3>
-  ${pend.length ? `<ul class="list">${pend.map(e => `<li class="row"><div><div class="t">${esc(entryWho(e))}</div>
-    <div class="s">${e.type === 'mensuelle' ? 'Cotisation de ' + monthLabel(e.mois) : esc(eventTitle(e.eventId) || 'Occasion')}</div>
-    <div class="acts"><button class="primary sm" onclick="confirmEntry('${e.id}')">Confirmer</button><button class="ghost sm" onclick="rejectEntry('${e.id}')">Refuser</button></div></div>
-    <div class="amt in">${fmt(e.montant)}</div></li>`).join('')}</ul>` : '<p class="empty">Rien à confirmer.</p>'}`;
+  const pend = A.entries.filter(e => e.statut === 'attente');
+  return `${seg}${body}${sec('En attente de confirmation')}
+  ${pend.length ? `<ul class="list">${pend.map(e => `<li class="row">${avatar(entryWho(e))}<div class="body"><div class="t">${esc(entryWho(e))}</div>
+    <div class="s">${e.type === 'mensuelle' ? 'Cotisation de ' + monthLabel(e.mois) : esc(evTitle(e.event_id) || 'Occasion')}</div>
+    ${admin ? `<div class="acts"><button class="btn sm primary" onclick="decideEntry('${e.id}',true)">Confirmer</button><button class="btn sm line" onclick="decideEntry('${e.id}',false)">Refuser</button></div>` : ''}</div>
+    <div class="end"><span class="amt in">${fmt(e.montant)}</span>${admin ? '' : chip('attente')}</div></li>`).join('')}</ul>` : emptyBox('Rien à confirmer.')}`;
 }
 
 function viewSorties() {
-  const pend = S.sorties.filter(s => s.statut === 'attente');
-  const hist = S.sorties.filter(s => s.statut !== 'attente').sort((a, b) => b.decidedAt.localeCompare(a.decidedAt)).slice(0, 20);
-  return `<h2>Sorties d'argent</h2>
-  <p class="muted">Solde disponible : <b>${fmt(solde())}</b>. Chaque sortie doit être autorisée avec le code PIN du gestionnaire.</p>
-  <section class="card"><label>Montant demandé (Ar)<input id="s-mt" inputmode="numeric" placeholder="Ex. 10000"></label>
-  <label>Motif de la demande<textarea id="s-motif" placeholder="À quoi servira cet argent ?"></textarea></label>
-  <label>Demandeur<select id="s-who" onchange="document.getElementById('s-free').hidden=this.value!=='_autre'">${memberOptions()}</select></label>
-  <input id="s-free" hidden placeholder="Nom du demandeur" style="margin:-4px 0 12px">
-  <label>Occasion concernée<select id="s-ev">${eventOptions('', 'Aucune occasion')}</select></label>
-  <button class="primary wide" onclick="addSortie()">Envoyer la demande</button></section>
-  <h3>Demandes en attente</h3>
-  ${pend.length ? `<ul class="list">${pend.map(s => `<li class="row"><div><div class="t">${esc(s.motif)}</div>
-    <div class="s">${esc(s.demandeur)}, ${fmtDate(s.date)}${s.eventId ? ', ' + esc(eventTitle(s.eventId)) : ''}</div>
-    ${s.montant > solde() ? '<div class="s" style="color:var(--red)">Dépasse le solde actuel</div>' : ''}
-    <div class="acts"><button class="primary sm" onclick="approveSortie('${s.id}')">Autoriser avec le PIN</button><button class="ghost sm" onclick="refuseSortie('${s.id}')">Refuser</button></div></div>
-    <div class="amt out">${fmt(s.montant)}</div></li>`).join('')}</ul>` : '<p class="empty">Aucune demande en attente.</p>'}
-  ${hist.length ? `<h3>Historique</h3><ul class="list">${hist.map(s => `<li class="row"><div><div class="t">${esc(s.motif)}</div><div class="s">${esc(s.demandeur)}, ${fmtDate(s.decidedAt)}</div></div><div class="right">${chipHtml(s.statut)}<span class="amt">${fmt(s.montant)}</span></div></li>`).join('')}</ul>` : ''}`;
+  const admin = isAdmin();
+  const pend = A.sorties.filter(s => s.statut === 'attente');
+  const hist = A.sorties.filter(s => s.statut !== 'attente').slice(0, 20);
+  return `<p class="muted" style="margin:0 4px 12px">Chaque sortie doit être autorisée par l'administrateur avec son code PIN.</p>
+  <div class="card"><div class="field"><label>Montant demandé (Ar)</label><input id="s-mt" inputmode="numeric" placeholder="Ex. 10000"></div>
+  <div class="field"><label>Motif de la demande</label><textarea id="s-motif" placeholder="À quoi servira cet argent ?"></textarea></div>
+  ${admin ? `<div class="field"><label>Demandeur</label><select id="s-who" onchange="$('s-free').parentNode.hidden=this.value!=='_autre'">${memberOptions()}</select></div>
+  <div class="field" hidden><label>Nom du demandeur</label><input id="s-free"></div>` : ''}
+  <div class="field"><label>Occasion concernée</label><select id="s-ev">${eventOptions('', 'Aucune occasion')}</select></div>
+  <button class="btn primary wide" onclick="addSortie()">Envoyer la demande</button></div>
+  ${sec('Demandes en attente')}
+  ${pend.length ? `<ul class="list">${pend.map(s => `<li class="row"><span class="mv out">${ic('outflow', 20)}</span><div class="body"><div class="t">${esc(s.motif)}</div>
+    <div class="s">${esc(s.demandeur)}, ${fmtDate(s.created_at)}${s.event_id ? ', ' + esc(evTitle(s.event_id)) : ''}</div>
+    ${admin && s.montant > solde() ? '<div class="s" style="color:var(--red)">Dépasse le solde actuel</div>' : ''}
+    ${admin ? `<div class="acts"><button class="btn sm primary" onclick="approveSortie('${s.id}')">Autoriser avec le PIN</button><button class="btn sm line" onclick="refuseSortie('${s.id}')">Refuser</button></div>` : ''}</div>
+    <div class="end"><span class="amt out">${fmt(s.montant)}</span>${admin ? '' : chip('attente')}</div></li>`).join('')}</ul>` : emptyBox('Aucune demande en attente.')}
+  ${hist.length ? `${sec('Historique')}<ul class="list">${hist.map(s => `<li class="row"><span class="mv out">${ic('outflow', 20)}</span><div class="body"><div class="t">${esc(s.motif)}</div><div class="s">${esc(s.demandeur)}, ${fmtDate(s.decided_at || s.created_at)}</div></div><div class="end">${chip(s.statut)}<span class="amt">${fmt(s.montant)}</span></div></li>`).join('')}</ul>` : ''}`;
 }
 
 function viewEvents() {
-  const evs = S.events.slice().sort((a, b) => b.date.localeCompare(a.date));
-  return `<h2>Évènements</h2>
-  <section class="card"><label>Nom de l'évènement<input id="v-titre" placeholder="Ex. Mariage de Rivo"></label>
-  <label>Date<input id="v-date" type="date" value="${new Date().toISOString().slice(0, 10)}"></label>
-  <label>Note (facultatif)<input id="v-note"></label>
-  <button class="primary wide" onclick="addEvent()">Ajouter l'évènement</button></section>
-  <h3>Liste</h3>
-  ${evs.length ? `<ul class="list">${evs.map(v => {
-    const inn = total(confirmed().filter(e => e.eventId === v.id)), out = total(approved().filter(s => s.eventId === v.id));
-    const used = S.entries.some(e => e.eventId === v.id) || S.sorties.some(s => s.eventId === v.id);
-    return `<li class="row"><div><div class="t">${esc(v.titre)}</div><div class="s">${fmtDate(v.date)}${v.note ? ', ' + esc(v.note) : ''}</div>
-    <div class="s">Collecté : ${fmt(inn)}, dépensé : ${fmt(out)}</div>
-    <div class="acts"><button class="primary sm" onclick="goCotiser('${v.id}')">Cotiser</button>${used ? '' : `<button class="ghost sm" onclick="deleteEvent('${v.id}')">Supprimer</button>`}</div></div></li>`;
-  }).join('')}</ul>` : '<p class="empty">Aucun évènement. Ajoutez-en un pour ouvrir une cotisation d\'occasion.</p>'}`;
+  const admin = isAdmin();
+  return `${admin ? `<div class="card"><div class="field"><label>Nom de l'évènement</label><input id="v-titre" placeholder="Ex. Mariage de Rivo"></div>
+  <div class="field"><label>Date</label><input id="v-date" type="date" value="${new Date().toISOString().slice(0, 10)}"></div>
+  <div class="field"><label>Note (facultatif)</label><input id="v-note"></div>
+  <button class="btn primary wide" onclick="addEvent()">${ic('plus', 18)} Ajouter l'évènement</button></div>` : ''}
+  ${sec('Évènements')}
+  ${A.events.length ? `<ul class="list">${A.events.map(v => {
+    const inn = total(confirmed().filter(e => e.event_id === v.id)), out = total(approved().filter(s => s.event_id === v.id));
+    const used = A.entries.some(e => e.event_id === v.id) || A.sorties.some(s => s.event_id === v.id);
+    return `<li class="row"><span class="mv in">${ic('calendar', 20)}</span><div class="body"><div class="t">${esc(v.titre)}</div><div class="s">${fmtDate(v.date)}${v.note ? ', ' + esc(v.note) : ''}</div>
+    <div class="s">Collecté : ${fmt(inn)}<br>Dépensé : ${fmt(out)}</div>
+    <div class="acts"><button class="btn sm primary" onclick="goCotiser('${v.id}')">Cotiser</button>${admin && !used ? `<button class="btn sm line" onclick="deleteEvent('${v.id}')">Supprimer</button>` : ''}</div></div></li>`;
+  }).join('')}</ul>` : emptyBox(admin ? 'Aucun évènement. Ajoutez-en un pour ouvrir une cotisation d\'occasion.' : 'Aucun évènement pour l\'instant.')}`;
 }
 
 function viewRapport() {
@@ -491,41 +654,61 @@ function viewRapport() {
   const months = [...new Set(all.map(m => ymOf(m.date)).concat([ymNow]))].sort().reverse();
   const mv = reportMovs(), ins = mv.filter(m => m.sens === 'in'), outs = mv.filter(m => m.sens === 'out');
   const group = a => { const o = {}; a.forEach(m => o[m.cat] = (o[m.cat] || 0) + m.montant); return Object.entries(o).sort((x, y) => y[1] - x[1]); };
-  const lines = (g, cls) => g.length ? `<ul class="list">${g.map(([k, v]) => `<li class="row"><div class="t">${esc(k)}</div><div class="amt ${cls}">${fmt(v)}</div></li>`).join('')}</ul>` : '<p class="empty">Rien sur cette période.</p>';
+  const lines = (g, cls) => g.length ? `<ul class="list">${g.map(([k, v]) => `<li class="row"><div class="body t">${esc(k)}</div><div class="amt ${cls}">${fmt(v)}</div></li>`).join('')}</ul>` : emptyBox('Rien sur cette période.');
   const ti = total(ins), to = total(outs);
-  return `<h2>Rapport</h2>
-  <label>Période<select onchange="ui.rep=this.value;render()"><option value="all" ${ui.rep === 'all' ? 'selected' : ''}>Depuis le début</option>${months.map(m => `<option value="${m}" ${ui.rep === m ? 'selected' : ''}>${monthLabel(m)}</option>`).join('')}</select></label>
-  <div class="sumgrid"><div class="card in">Entrées<b>${fmt(ti)}</b></div><div class="card out">Sorties<b>${fmt(to)}</b></div></div>
+  return `<div class="card"><div class="field" style="margin:0"><label>Période</label><select onchange="ui.rep=this.value;render()"><option value="all" ${ui.rep === 'all' ? 'selected' : ''}>Depuis le début</option>${months.map(m => `<option value="${m}" ${ui.rep === m ? 'selected' : ''}>${monthLabel(m)}</option>`).join('')}</select></div></div>
+  <div class="sumgrid"><div class="card in"><span class="muted">Entrées</span><b>${fmt(ti)}</b></div><div class="card out"><span class="muted">Sorties</span><b>${fmt(to)}</b></div></div>
   <div class="card">Différence sur la période : <b>${fmt(ti - to)}</b><div class="muted">Fonds disponibles aujourd'hui : ${fmt(solde())}</div></div>
-  <h3>Entrées par catégorie ou occasion</h3>${lines(group(ins), 'in')}
-  <h3>Sorties par occasion</h3>${lines(group(outs), 'out')}
-  <h3>Journal détaillé</h3>
-  ${mv.length ? `<ul class="list">${mv.map(moveRow).join('')}</ul>` : '<p class="empty">Aucun mouvement confirmé sur cette période.</p>'}
-  <p class="muted">Seuls les paiements confirmés et les sorties autorisées sont comptés.</p>
-  <button class="ghost wide" onclick="exportCsv()">Exporter en CSV</button>`;
+  ${sec('Entrées par catégorie ou occasion')}${lines(group(ins), 'in')}
+  ${sec('Sorties par occasion')}${lines(group(outs), 'out')}
+  ${sec('Journal détaillé')}
+  ${mv.length ? `<ul class="list">${mv.map(moveRow).join('')}</ul>` : emptyBox('Aucun mouvement confirmé sur cette période.')}
+  <p class="muted" style="margin:0 4px 14px">Seuls les paiements confirmés et les sorties autorisées sont comptés.</p>
+  <button class="btn line wide" onclick="exportCsv()">Exporter en CSV</button>`;
 }
 
 /* ---------- Affichage ---------- */
-const TABS = [['fonds', 'Fonds'], ['membres', 'Membres'], ['entrees', 'Entrées'], ['sorties', 'Sorties'], ['evenements', 'Évènements'], ['rapport', 'Rapport']];
-const VIEWS = { fonds: viewFonds, membres: viewMembres, entrees: viewEntrees, sorties: viewSorties, evenements: viewEvents, rapport: viewRapport };
+const TABS = [['home', 'Accueil', 'home'], ['membres', 'Membres', 'users'], ['entrees', 'Entrées', 'inflow'], ['sorties', 'Sorties', 'outflow'], ['evenements', 'Évènements', 'calendar'], ['rapport', 'Rapport', 'chart']];
+const VIEWS = { home: viewHome, membres: viewMembres, entrees: viewEntrees, sorties: viewSorties, evenements: viewEvents, rapport: viewRapport };
+const TITLES = { membres: ['Membres', 'Le groupe et ses cotisations'], entrees: ['Entrées d\'argent', 'Cotisations mensuelles et d\'occasion'], sorties: ['Sorties d\'argent', 'Demandes et autorisations'], evenements: ['Évènements', 'Les occasions du groupe'], rapport: ['Rapport', 'Entrées, sorties et motifs'] };
 function go(t) { ui.tab = t; render(); window.scrollTo(0, 0); }
+function badge(t) {
+  if (!isAdmin()) return 0;
+  return t === 'entrees' ? A.entries.filter(e => e.statut === 'attente').length : t === 'sorties' ? A.sorties.filter(s => s.statut === 'attente').length : 0;
+}
 function render() {
-  const app = document.getElementById('app');
-  if (!S.pinHash) { app.innerHTML = setupView(); return; }
-  const open = Date.now() < ui.unlocked;
-  app.innerHTML = `<header class="top"><h1>${esc(S.nom)}</h1><div class="acts">
-    ${open ? '<button class="ghost sm" onclick="lockNow()">Verrouiller</button>' : ''}<button class="ghost sm" onclick="changePin()">Code PIN</button></div></header>
-    <main>${VIEWS[ui.tab]()}</main>
-    <nav class="tabs"><div class="in">${TABS.map(t => `<button class="${ui.tab === t[0] ? 'on' : ''}" onclick="go('${t[0]}')">${t[1]}</button>`).join('')}</div></nav>`;
+  const app = $('app');
+  if (A.screen === 'boot') { app.innerHTML = '<div class="loading"><div class="spin"></div></div>'; return; }
+  if (A.screen === 'config') { app.innerHTML = configScreen(); return; }
+  if (A.screen === 'auth') { app.innerHTML = authScreen(); return; }
+  if (A.screen === 'nogroup') { app.innerHTML = noGroupScreen(); return; }
+  const home = ui.tab === 'home';
+  const band = `<header class="band"><div class="band-in"><div class="row1"><div class="grp">${esc(G().nom)}</div>
+    <div class="tools"><button class="iconbtn" onclick="refresh()" aria-label="Actualiser">${ic('refresh', 20)}</button><button class="iconbtn" onclick="openProfile()" aria-label="Mon profil">${ic('user', 20)}</button></div></div>
+    ${home ? `<div class="lab">Fonds disponibles</div><div class="big">${fmt(solde())}</div>
+      <div class="split"><div class="pill">Entrées<b>${fmt(total(confirmed()))}</b></div><div class="pill">Sorties<b>${fmt(total(approved()))}</b></div></div>`
+    : `<div class="title">${TITLES[ui.tab][0]}</div><div class="sub">${TITLES[ui.tab][1]}</div>`}
+    <div class="stripe"><i></i><i></i><i></i></div></div></header>`;
+  app.innerHTML = band + `<main class="view" id="view">${VIEWS[ui.tab]()}</main>
+    <nav class="tabs"><div class="in">${TABS.map(t => `<button class="${ui.tab === t[0] ? 'on' : ''}" onclick="go('${t[0]}')"><span class="pl">${ic(t[2], 22)}${badge(t[0]) ? `<span class="dot">${badge(t[0])}</span>` : ''}</span>${t[1]}</button>`).join('')}</div></nav>`;
 }
 
 /* ---------- Démarrage ---------- */
-if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(() => {}); }
-if (navigator.storage && navigator.storage.persist) { navigator.storage.persist().catch(() => {}); }
-(async () => {
-  S = await load() || { nom: 'Caisse du groupe', pinHash: '', members: [], events: [], entries: [], sorties: [] };
+async function boot() {
+  if (!cfg().url) { A.screen = 'config'; render(); return; }
+  if (!session) { A.screen = 'auth'; render(); return; }
+  A.screen = 'boot'; render();
+  try { await loadAll(); } catch (e) { if (e.status === 401 || !session) { setSession(null); A.screen = 'auth'; } else { A.screen = 'auth'; ui.msg = e.message; } }
   render();
-})();
+}
+// Mise à jour automatique discrète (sans casser une saisie en cours)
+setInterval(async () => {
+  if (A.screen !== 'main' || document.hidden || ui.busy || !$('modal').hidden) return;
+  const el = document.activeElement;
+  if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
+  try { await loadAll(); render(); } catch (e) {}
+}, 45000);
+boot();
 </script>
 </body>
 </html>
